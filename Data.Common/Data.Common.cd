@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Data.Common.DbProvider" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>iIQAACAQAAAAAAAAAAAAAARAAQAgAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>DbProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data.Common.DbSchema" Collapsed="true">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>CEQQABAwAAAAAAIAACAAAQTAAQgwAAABADAAAKEwAAA=</HashCode>
+      <FileName>DbSchema.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Common.MySqlProvider" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAAAAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MySqlProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Common.OleDbProvider" Collapsed="true">
+    <Position X="6.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OleDbProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Common.SqlServerCeProvider" Collapsed="true">
+    <Position X="8.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAQQABAAAAAAAAAAAARAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SqlServerCeProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Common.SqlServerProvider" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SqlServerProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Data.Common.IDbProvider" Collapsed="true">
+    <Position X="11" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIQAAAAQAAAAAAAAAAAAAARAAQAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>IDbProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

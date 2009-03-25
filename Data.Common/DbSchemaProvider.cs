@@ -1,0 +1,237 @@
+﻿//
+//  The contents of this file are subject to the Mozilla Public
+//  License Version 1.1 (the "License"); you may not use this file
+//  except in compliance with the License. You may obtain a copy of
+//  the License at http://www.mozilla.org/MPL/
+//
+//  Software distributed under the License is distributed on an 
+//  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+//  implied. See the License for the specific language governing
+//  rights and limitations under the License.
+//
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Linq;
+using System.Text;
+
+// ToDo:
+// 1. 
+
+namespace Data.Common
+{
+    abstract public class DbSchemaProvider : IDbSchemaProvider
+    {
+        private string _ConnectionString;
+        private string _ProviderName;
+
+        protected string ProviderName
+        {
+            get { return _ProviderName; }
+        }
+
+        public DbSchemaProvider(string connectionstring, string providername)
+        {
+            _ConnectionString = connectionstring;
+            _ProviderName = providername;
+        }
+
+        #region ' IDbProvider Members '
+
+        virtual public DataTable GetSchemaTables()
+        {
+            DataTable tbl = new DataTable("SchemaTables");
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                tbl = _Connection.GetSchema("Tables");
+            }
+
+            return tbl;
+        }
+
+        virtual public DataTable GetTableColumns(string tableSchema, string tableName)
+        {
+            DataTable tbl = new DataTable();
+
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                DbCommand _Command = _Connection.CreateCommand();
+                _Command.CommandText = string.Format("SELECT * FROM {0}", QualifiedTableName(tableSchema, tableName));
+                _Command.CommandType = CommandType.Text;
+                tbl = _Command.ExecuteReader(CommandBehavior.KeyInfo).GetSchemaTable();
+            }
+
+            return tbl;
+        }
+
+        abstract public DataTable GetConstraints();
+
+        virtual public string QualifiedTableName(string tableSchema, string tableName)
+        {
+            if (!string.IsNullOrEmpty(tableSchema))
+                return string.Format("[{0}].[{1}]", tableSchema, tableName);
+            else
+                return string.Format("[{0}]", tableName);
+        }
+
+        virtual public DataTable GetProcedures()
+        {
+            DataTable tbl = new DataTable("Procedures");
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                tbl = _Connection.GetSchema("Procedures");
+            }
+
+            return tbl;
+        }
+
+        virtual public DataTable GetProcedureParameters(string procedureSchema, string procedureName)
+        {
+            DataTable tbl = new DataTable("ProcedureParameters");
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                string[] restrictions = new string[4] { null, procedureSchema, procedureName, null };
+                tbl = _Connection.GetSchema("ProcedureParameters", restrictions);
+            }
+            return tbl;
+        }
+
+        virtual public string GetPropertyType(string SystemType)
+        {
+            return GetPropertyType(SystemType, false);
+        }
+
+        virtual public string GetPropertyType(string SystemType, bool IsNullable)
+        {
+            string classType = string.Empty;
+            string[] systemType = SystemType.Split('.');
+            switch (systemType[1])
+            {
+                case "String":
+                    classType = "string";
+                    break;
+
+                case "SByte":
+                case "Boolean":
+                    classType = IsNullable ? "bool?" : "bool";
+                    break;
+
+                case "Byte":
+                    classType = IsNullable ? "byte?" : "byte";
+                    break;
+
+                case "Int16":
+                    classType = IsNullable ? "short?" : "short";
+                    break;
+
+                case "Int32":
+                    classType = IsNullable ? "int?" : "int";
+                    break;
+
+                case "Int64":
+                    classType = IsNullable ? "long?" : "long";
+                    break;
+
+                case "Decimal":
+                    classType = IsNullable ? "decimal?" : "decimal";
+                    break;
+
+                case "Double":
+                    classType = IsNullable ? "double?" : "double";
+                    break;
+
+                case "DateTime":
+                case "Guid":
+                case "Single":
+                case "Type":
+                    classType = systemType[1];
+                    break;
+
+                case "Byte[]":
+                    classType = IsNullable ? "byte?[]" : "byte[]";
+                    break;
+
+                default:
+                    //throw new NotImplementedException("Not implemented type :" + SystemType);
+                    classType = SystemType;
+                    break;
+            }
+
+            return classType;
+        }
+
+        abstract public DbType GetDbType(string providerDbType);
+
+        #endregion
+
+        #region ' Helper functions '
+
+        internal DbConnection GetDBConnection()
+        {
+            DbProviderFactory providerFactory = DbProviderFactories.GetFactory(_ProviderName);
+            DbConnection _Connection = providerFactory.CreateConnection();
+            _Connection.ConnectionString = _ConnectionString;
+            _Connection.Open();
+            return _Connection;
+        }
+
+        protected DataTable GetDTSchemaTables()
+        {
+            DataTable tbl = new DataTable("SchemaTables");
+            tbl.Columns.Add("TABLE_CATALOG", typeof(System.String));
+            tbl.Columns.Add("TABLE_SCHEMA", typeof(System.String));
+            tbl.Columns.Add("TABLE_NAME", typeof(System.String));
+            tbl.Columns.Add("TABLE_TYPE", typeof(System.String));
+            tbl.Columns.Add("TABLE_GUID", typeof(System.Guid));
+            tbl.Columns.Add("DESCRIPTION", typeof(System.String));
+            tbl.Columns.Add("TABLE_PROPID", typeof(System.Int32));
+            tbl.Columns.Add("DATE_CREATED", typeof(System.DateTime));
+            tbl.Columns.Add("DATE_MODIFIED", typeof(System.DateTime));
+
+            return tbl;
+        }
+
+        protected DataTable GetDTConstrains()
+        {
+            DataTable tbl = new DataTable("Constraints");
+            tbl.Columns.Add("PK_TABLE_CATALOG", typeof(System.String));
+            tbl.Columns.Add("PK_TABLE_SCHEMA", typeof(System.String));
+            tbl.Columns.Add("PK_TABLE_NAME", typeof(System.String));
+            tbl.Columns.Add("PK_COLUMN_NAME", typeof(System.String));
+            tbl.Columns.Add("PK_ORDINAL_POSITION", typeof(System.String));
+            tbl.Columns.Add("PK_NAME", typeof(System.String));
+            tbl.Columns.Add("FK_TABLE_CATALOG", typeof(System.String));
+            tbl.Columns.Add("FK_TABLE_SCHEMA", typeof(System.String));
+            tbl.Columns.Add("FK_TABLE_NAME", typeof(System.String));
+            tbl.Columns.Add("FK_COLUMN_NAME", typeof(System.String));
+            tbl.Columns.Add("FK_ORDINAL_POSITION", typeof(System.Int32));
+            tbl.Columns.Add("FK_NAME", typeof(System.String));
+
+            return tbl;
+        }
+
+        protected DataTable GetDTProcedureParameters()
+        {
+            DataTable tbl = new DataTable("ProcedureParameters");
+            tbl.Columns.Add("SPECIFIC_CATALOG", typeof(System.String));
+            tbl.Columns.Add("SPECIFIC_SCHEMA", typeof(System.String));
+            tbl.Columns.Add("SPECIFIC_NAME", typeof(System.String));
+            tbl.Columns.Add("PARAMETER_NAME", typeof(System.String));
+            tbl.Columns.Add("ORDINAL_POSITION", typeof(System.Int32));
+            tbl.Columns.Add("PARAMETER_MODE", typeof(ParameterDirection));
+            tbl.Columns.Add("IS_RESULT", typeof(System.Boolean));
+            tbl.Columns.Add("DATA_TYPE", typeof(System.Data.DbType));
+            tbl.Columns.Add("CHARACTER_MAXIMUM_LENGTH", typeof(System.Int32));
+            tbl.Columns.Add("NUMERIC_PRECISION", typeof(System.Int16));
+            tbl.Columns.Add("NUMERIC_SCALE", typeof(System.Int32));
+            tbl.Columns.Add("DATETIME_PRECISION", typeof(System.Int16));
+
+            return tbl;
+        }
+
+        #endregion
+
+    }
+}
