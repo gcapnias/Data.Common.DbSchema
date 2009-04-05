@@ -15,10 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.Common;
-using System.Data.OleDb;
 using System.Linq;
-using System.Text;
 
 namespace Data.Common
 {
@@ -60,12 +57,18 @@ namespace Data.Common
             this(ConnectionName, ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString, ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName)
         { }
 
-        public DbSchema(string ConnectionName, string ConnectionString, string ProviderName)
+        public DbSchema(string ConnectionString, string ProviderName) :
+            this(null, ConnectionString, ProviderName)
+        { }
+
+        private DbSchema(string ConnectionName, string ConnectionString, string ProviderName)
         {
-            _ConnectionName = ConnectionName;
+            if (!string.IsNullOrEmpty(ConnectionString))
+                _ConnectionName = ConnectionName;
+
             _ConnectionString = ConnectionString;
             _ProviderName = ProviderName;
-            _Provider = GetSchemaProvider(_ConnectionName, _ProviderName);
+            _Provider = GetSchemaProvider(_ConnectionString, _ProviderName);
         }
 
         #endregion
@@ -157,26 +160,7 @@ namespace Data.Common
             return tbl;
         }
 
-        public string GetTablePrimaryKey(string tableSchema, string tableName)
-        {
-            DataTable tbl = GetTableColumns(tableSchema, tableName);
-            string primarykey = "";
-            foreach (DataRow columnRow in tbl.Rows)
-            {
-                bool isPrimaryKey = false;
-                if (columnRow["IsKey"] != DBNull.Value)
-                    isPrimaryKey = (bool)columnRow["IsKey"];
-
-                if (isPrimaryKey)
-                {
-                    primarykey = columnRow["ColumnName"].ToString();
-                    break;
-                }
-            }
-            return primarykey;
-        }
-
-        public DataTable GetTablePrimaryKeys(string tableSchema, string tableName)
+        public DataTable GetTablePrimaryKeyColumns(string tableSchema, string tableName)
         {
             DataTable TableColumns = GetTableColumns(tableSchema, tableName);
             string WhereClause = "IsKey = true";
@@ -192,7 +176,7 @@ namespace Data.Common
             //keys, one-to-many, many-to-one
             List<string> filteredcolumns = new List<string>();
 
-            foreach (DataRow primarykey in GetTablePrimaryKeys(tableSchema, tableName).Rows)
+            foreach (DataRow primarykey in GetTablePrimaryKeyColumns(tableSchema, tableName).Rows)
             {
                 string columnname = "'" + primarykey["ColumnName"].ToString() + "'";
                 if (!filteredcolumns.Contains(columnname))
