@@ -47,10 +47,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SqlServerSchemaProviderTest.cs" />
-    <Compile Include="MySqlSchemaProviderTest.cs" />
+    <Compile Include="DbSchemaTest.cs" />
+    <Compile Include="SchemaProviders\SqlServerSchemaProviderTest.cs" />
+    <Compile Include="SchemaProviders\MySqlSchemaProviderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlServerCeSchemaProviderTest.cs" />
+    <Compile Include="SchemaProviders\SqlServerCeSchemaProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data.Common\Data.Common.csproj">
@@ -60,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Shadow Include="Test References\Data.Common.accessor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

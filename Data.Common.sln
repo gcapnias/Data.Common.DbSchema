@@ -7,9 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Common.Tests", "Data.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77E9ABF5-9871-4E35-9ECB-0D01770B807C}"
 	ProjectSection(SolutionItems) = preProject
-		Data.Common.tt = Data.Common.tt
+		Data.Common.ttinclude = Data.Common.ttinclude
 		Data.Common.vsmdi = Data.Common.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		Northwind_Schema_Data_SQLServer.sql = Northwind_Schema_Data_SQLServer.sql
 	EndProjectSection
 EndProject
 Global

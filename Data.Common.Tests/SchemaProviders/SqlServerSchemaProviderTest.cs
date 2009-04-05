@@ -102,7 +102,7 @@ namespace Data.Common.Tests
         {
             DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(30, actual.Rows.Count);
+            Assert.AreEqual(29, actual.Rows.Count);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Data.Common.Tests
         {
             DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(15, actual.Rows.Count);
+            Assert.AreEqual(7, actual.Rows.Count);
         }
 
         /// <summary>
