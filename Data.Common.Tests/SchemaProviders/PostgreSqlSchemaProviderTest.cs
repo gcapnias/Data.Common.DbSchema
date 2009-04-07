@@ -1,26 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data;
 using System.Data.Common;
-
 using Data.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Data.Common.Tests
 {
+    
+    
     /// <summary>
-    ///This is a test class for SqlServerProviderTest and is intended
-    ///to contain all SqlServerProviderTest Unit Tests
+    ///This is a test class for PostgreSqlSchemaProviderTest and is intended
+    ///to contain all PostgreSqlSchemaProviderTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SqlServerSchemaProviderTest
+    public class PostgreSqlSchemaProviderTest
     {
-        const string connectionname = "Northwind";
+        const string connectionname = "PostgreSQL";
         string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
         string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
-        string tableSchema = "dbo";
+        string tableSchema = "public";
         string tableName = "Employees";
-        string procedureSchema = "dbo";
-        string procedureName = "CustOrdersOrders";
+        string procedureSchema = "public";
+        string procedureName = "getordercount";
+
 
         private TestContext testContextInstance;
 
@@ -40,7 +42,7 @@ namespace Data.Common.Tests
             }
         }
 
-        #region ' Additional test attributes '
+        #region Additional test attributes
         // 
         //You can use the following additional attributes as you write your tests:
         //
@@ -75,10 +77,10 @@ namespace Data.Common.Tests
         ///A test for QualifiedTableName
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderQualifiedTableNameTest()
+        public void PostgreSqlSchemaQualifiedTableNameTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
-            string expected = "[dbo].[Employees]";
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
+            string expected = "public.Employees";
             string actual = target.QualifiedTableName(tableSchema, tableName);
             Assert.AreEqual(expected, actual);
         }
@@ -87,59 +89,53 @@ namespace Data.Common.Tests
         ///A test for GetTableColumns
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetTableColumnsTest()
+        public void PostgreSqlSchemaGetTableColumnsTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
-            Assert.AreEqual(18, actual.Rows.Count);
+            Assert.AreEqual(15, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetSchemaTables
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetSchemaTablesTest()
+        public void PostgreSqlSchemaGetSchemaTablesTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(29, actual.Rows.Count);
+            Assert.AreEqual(11, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetProcedures
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetProceduresTest()
+        public void PostgreSqlSchemaGetProceduresTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(7, actual.Rows.Count);
+            Assert.AreEqual(4, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetProcedureParameters
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetProcedureParametersTest()
+        public void PostgreSqlSchemaGetProcedureParametersTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
-            Assert.AreEqual(2, actual.Rows.Count);
-
-            System.Console.WriteLine("Parmeters in Procedure");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("Parameter: {0}", relationRow["PARAMETER_NAME"].ToString()));
-            }
+            Assert.AreEqual(1, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetDBConnection
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetDBConnectionTest()
+        public void PostgreSqlSchemaGetDBConnectionTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DbConnection actual = target.GetDBConnection();
             Assert.AreEqual(true, actual.State == ConnectionState.Open);
         }
@@ -148,22 +144,22 @@ namespace Data.Common.Tests
         ///A test for GetConstraints
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetConstraintsTest()
+        public void PostgreSqlSchemaGetConstraintsTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
-            Assert.AreEqual(13, actual.Rows.Count);
+            Assert.AreEqual(10, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetDbType
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetDbTypeTest()
+        public void PostgreSqlSchemaGetDbTypeTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             string providerDbType = "18";
-            DbType expected = DbType.AnsiString;
+            DbType expected = DbType.Int16;
             DbType actual = target.GetDbType(providerDbType);
             Assert.AreEqual(expected, actual);
         }
@@ -172,9 +168,9 @@ namespace Data.Common.Tests
         ///A test for GetPropertyType
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetPropertyTypeTest()
+        public void PostgreSqlSchemaGetPropertyTypeTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
@@ -182,18 +178,17 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
-        ///A test for SqlServerProvider Constructor
+        ///A test for PostgreSqlSchema Constructor
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderConstructorTest()
+        public void PostgreSqlSchemaConstructorTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             using (DbConnection _Connection = target.GetDBConnection())
             {
                 Assert.AreEqual(true, _Connection.State == ConnectionState.Open);
                 Assert.AreEqual(connectionstring, _Connection.ConnectionString);
             }
         }
-
     }
 }

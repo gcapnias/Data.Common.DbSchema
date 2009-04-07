@@ -311,7 +311,7 @@ namespace Data.Common.Tests
             DbSchema target = new DbSchema(connectionname);
             string procedureName = "CustOrderHist";
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
-            Assert.AreEqual(1, actual.Rows.Count);
+            Assert.AreEqual(2, actual.Rows.Count);
 
             System.Console.WriteLine("Parmeters in Procedure");
             foreach (DataRow relationRow in actual.Rows)

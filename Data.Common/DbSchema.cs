@@ -365,6 +365,10 @@ namespace Data.Common
                     dbProvider = new MySqlSchemaProvider(connectionString, providerName);
                     break;
 
+                case "npgsql":
+                    dbProvider = new PostgreSqlSchemaProvider(connectionString, providerName);
+                    break;
+
                 default:
                     throw new NotImplementedException("The provider '" + providerName + "' is not implemented!");
 

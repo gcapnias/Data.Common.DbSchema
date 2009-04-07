@@ -12,7 +12,6 @@
 
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 
 
 namespace Data.Common
@@ -43,44 +42,6 @@ namespace Data.Common
                 return string.Format("`{0}`.`{1}`", tableSchema, tableName);
             else
                 return string.Format("`{0}`", tableName);
-        }
-
-        public override DataTable GetProcedureParameters(string procedureSchema, string procedureName)
-        {
-            DataTable tbl = GetDTProcedureParameters();
-            using (DbConnection _Connection = GetDBConnection())
-            {
-                DbCommand _Command = _Connection.CreateCommand();
-                _Command.CommandText = this.QualifiedTableName(procedureSchema, procedureName);
-                _Command.CommandType = CommandType.StoredProcedure;
-
-                DbParameter par = _Command.CreateParameter();
-
-                DbProviderFactory pf = DbProviderFactories.GetFactory(this.ProviderName);
-                DbCommandBuilder cb = pf.CreateCommandBuilder();
-                MethodInfo theMethod = cb.GetType().GetMethod("DeriveParameters");
-                theMethod.Invoke(cb, new object[] { _Command });
-
-                int counter = 1;
-                foreach (DbParameter p in _Command.Parameters)
-                {
-                    DataRow parameterRow = tbl.NewRow();
-                    if (!string.IsNullOrEmpty(procedureSchema))
-                        parameterRow["SPECIFIC_SCHEMA"] = procedureSchema;
-                    parameterRow["SPECIFIC_NAME"] = procedureName;
-                    parameterRow["PARAMETER_NAME"] = p.ParameterName;
-                    parameterRow["ORDINAL_POSITION"] = counter;
-                    parameterRow["PARAMETER_MODE"] = p.Direction;
-                    parameterRow["IS_RESULT"] = p.Direction == ParameterDirection.ReturnValue;
-                    parameterRow["DATA_TYPE"] = p.DbType;
-                    parameterRow["CHARACTER_MAXIMUM_LENGTH"] = p.Size;
-
-                    tbl.Rows.Add(parameterRow);
-                    counter++;
-                }
-            }
-
-            return tbl;
         }
 
         public override DbType GetDbType(string providerDbType)

@@ -59,7 +59,7 @@ namespace Data.Common
 
         public override DataTable GetConstraints()
         {
-            DataTable tbl = GetDTConstrains();
+            DataTable tbl = GetDTSchemaConstrains();
             using (DbConnection _Connection = this.GetDBConnection())
             {
                 DbCommand _Command = _Connection.CreateCommand();
@@ -104,12 +104,12 @@ namespace Data.Common
 
         public override DataTable GetProcedures()
         {
-            return new DataTable("Procedures");
+            return base.GetDTSchemaProcedures();
         }
 
         public override DataTable GetProcedureParameters(string procedureSchema, string procedureName)
         {
-            return GetDTProcedureParameters();
+            return base.GetDTSchemaProcedures();
         }
 
         public override DbType GetDbType(string providerDbType)
