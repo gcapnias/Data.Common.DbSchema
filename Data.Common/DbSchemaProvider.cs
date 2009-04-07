@@ -12,6 +12,8 @@
 
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
+using System;
 
 // ToDo:
 // 1. 
@@ -56,6 +58,8 @@ namespace Data.Common
                 DbCommand _Command = _Connection.CreateCommand();
                 _Command.CommandText = string.Format("SELECT * FROM {0}", QualifiedTableName(tableSchema, tableName));
                 _Command.CommandType = CommandType.Text;
+
+                System.Console.WriteLine("SQL: " + _Command.CommandText);
                 tbl = _Command.ExecuteReader(CommandBehavior.KeyInfo).GetSchemaTable();
             }
 
@@ -85,12 +89,49 @@ namespace Data.Common
 
         virtual public DataTable GetProcedureParameters(string procedureSchema, string procedureName)
         {
-            DataTable tbl = new DataTable("ProcedureParameters");
+            #region ' Decapated Code '
+            //DataTable tbl = new DataTable("ProcedureParameters");
+            //using (DbConnection _Connection = GetDBConnection())
+            //{
+            //    string[] restrictions = new string[4] { null, procedureSchema, procedureName, null };
+            //    tbl = _Connection.GetSchema("ProcedureParameters", restrictions);
+            //}
+            //return tbl;
+            #endregion
+
+            DataTable tbl = GetDTSchemaProcedureParameters();
             using (DbConnection _Connection = GetDBConnection())
             {
-                string[] restrictions = new string[4] { null, procedureSchema, procedureName, null };
-                tbl = _Connection.GetSchema("ProcedureParameters", restrictions);
+                DbCommand _Command = _Connection.CreateCommand();
+                _Command.CommandText = this.QualifiedTableName(procedureSchema, procedureName);
+                _Command.CommandType = CommandType.StoredProcedure;
+
+                DbParameter par = _Command.CreateParameter();
+
+                DbProviderFactory pf = DbProviderFactories.GetFactory(this.ProviderName);
+                DbCommandBuilder cb = pf.CreateCommandBuilder();
+                MethodInfo theMethod = cb.GetType().GetMethod("DeriveParameters");
+                theMethod.Invoke(cb, new object[] { _Command });
+
+                int counter = 1;
+                foreach (DbParameter p in _Command.Parameters)
+                {
+                    DataRow parameterRow = tbl.NewRow();
+                    if (!string.IsNullOrEmpty(procedureSchema))
+                        parameterRow["SPECIFIC_SCHEMA"] = procedureSchema;
+                    parameterRow["SPECIFIC_NAME"] = procedureName;
+                    parameterRow["PARAMETER_NAME"] = p.ParameterName;
+                    parameterRow["ORDINAL_POSITION"] = counter;
+                    parameterRow["PARAMETER_MODE"] = p.Direction;
+                    parameterRow["IS_RESULT"] = p.Direction == ParameterDirection.ReturnValue;
+                    parameterRow["DATA_TYPE"] = p.DbType;
+                    parameterRow["CHARACTER_MAXIMUM_LENGTH"] = p.Size;
+
+                    tbl.Rows.Add(parameterRow);
+                    counter++;
+                }
             }
+
             return tbl;
         }
 
@@ -189,7 +230,7 @@ namespace Data.Common
             return tbl;
         }
 
-        protected DataTable GetDTConstrains()
+        protected DataTable GetDTSchemaConstrains()
         {
             DataTable tbl = new DataTable("Constraints");
             tbl.Columns.Add("PK_TABLE_CATALOG", typeof(System.String));
@@ -208,7 +249,23 @@ namespace Data.Common
             return tbl;
         }
 
-        protected DataTable GetDTProcedureParameters()
+        protected DataTable GetDTSchemaProcedures()
+        {
+            DataTable tbl = new DataTable("Procedures");
+            tbl.Columns.Add(new DataColumn("SPECIFIC_CATALOG", typeof(string)));
+            tbl.Columns.Add(new DataColumn("SPECIFIC_SCHEMA", typeof(string)));
+            tbl.Columns.Add(new DataColumn("SPECIFIC_NAME", typeof(string)));
+            tbl.Columns.Add(new DataColumn("ROUTINE_CATALOG", typeof(string)));
+            tbl.Columns.Add(new DataColumn("ROUTINE_SCHEMA", typeof(string)));
+            tbl.Columns.Add(new DataColumn("ROUTINE_NAME", typeof(string)));
+            tbl.Columns.Add(new DataColumn("ROUTINE_TYPE", typeof(string))); 
+            tbl.Columns.Add(new DataColumn("CREATED", typeof(DateTime)));
+            tbl.Columns.Add(new DataColumn("LAST_ALTERED", typeof(DateTime)));
+
+            return tbl;
+        }
+
+        protected DataTable GetDTSchemaProcedureParameters()
         {
             DataTable tbl = new DataTable("ProcedureParameters");
             tbl.Columns.Add("SPECIFIC_CATALOG", typeof(System.String));

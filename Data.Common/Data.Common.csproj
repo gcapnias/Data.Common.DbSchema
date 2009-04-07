@@ -51,6 +51,7 @@
     <Compile Include="IDbSchemaProvider.cs" />
     <Compile Include="MySqlSchemaProvider.cs" />
     <Compile Include="OleDbSchemaProvider.cs" />
+    <Compile Include="PostgreSqlSchemaProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerSchemaProvider.cs" />
     <Compile Include="SqlServerCeSchemaProvider.cs" />
