@@ -180,8 +180,14 @@ namespace Data.Common
                     break;
 
                 case "DateTime":
-                case "Guid":
+                    classType = (IsNullable ? "DateTime?" : "DateTime");
+                    break;
+
                 case "Single":
+                    classType = (IsNullable ? "float?" : "float");
+                    break;
+                                        
+                case "Guid":
                 case "Type":
                     classType = systemType[1];
                     break;
