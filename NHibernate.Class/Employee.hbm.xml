@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Northwind" assembly="NHibernate.Class">
+    <class name="Northwind.Employee, NHibernate.Class" table="[dbo].[Employees]" lazy="true">
+        <id name="EmployeeID" type="Int32">
+            <column name="EmployeeID" not-null="false" unique="true" />
+            <generator class="native" />
+        </id>
+        <property name="Address" type="String">
+            <column name="Address" length="60" not-null="false" />
+        </property>
+        <property name="BirthDate" type="DateTime">
+            <column name="BirthDate" not-null="false" />
+        </property>
+        <property name="City" type="String">
+            <column name="City" length="15" not-null="false" />
+        </property>
+        <property name="Country" type="String">
+            <column name="Country" length="15" not-null="false" />
+        </property>
+        <property name="Extension" type="String">
+            <column name="Extension" length="4" not-null="false" />
+        </property>
+        <property name="FirstName" type="String">
+            <column name="FirstName" length="10" not-null="true" />
+        </property>
+        <property name="HireDate" type="DateTime">
+            <column name="HireDate" not-null="false" />
+        </property>
+        <property name="HomePhone" type="String">
+            <column name="HomePhone" length="24" not-null="false" />
+        </property>
+        <property name="LastName" type="String">
+            <column name="LastName" length="20" not-null="true" />
+        </property>
+        <property name="Notes" type="String">
+            <column name="Notes" length="1073741823" not-null="false" />
+        </property>
+        <property name="Photo" type="BinaryBlob">
+            <column name="Photo" not-null="false" />
+        </property>
+        <property name="PhotoPath" type="String">
+            <column name="PhotoPath" length="255" not-null="false" />
+        </property>
+        <property name="PostalCode" type="String">
+            <column name="PostalCode" length="10" not-null="false" />
+        </property>
+        <property name="Region" type="String">
+            <column name="Region" length="15" not-null="false" />
+        </property>
+        <property name="Title" type="String">
+            <column name="Title" length="30" not-null="false" />
+        </property>
+        <property name="TitleOfCourtesy" type="String">
+            <column name="TitleOfCourtesy" length="25" not-null="false" />
+        </property>
+        <bag name="Employees" lazy="true" inverse="true" cascade="all-delete-orphan">
+            <key column="EmployeeID" />
+            <one-to-many class="Employee" />
+        </bag>
+        <bag name="Orders" lazy="true" inverse="true" cascade="all-delete-orphan">
+            <key column="EmployeeID" />
+            <one-to-many class="Order" />
+        </bag>
+        <many-to-one name="EmployeeMember" column="ReportsTo" class="Employee" not-null="true" />
+        <set name="Territories" table="EmployeeTerritories" lazy="true" inverse="true">
+            <key column="EmployeeID" />
+            <many-to-many class="Territory" column="TerritoryID" />
+        </set>
+    </class>
+</hibernate-mapping>
+

@@ -121,30 +121,13 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
-        ///A test for GetTablesManyToManyRelations
-        ///</summary>
-        [TestMethod()]
-        public void GetTablesManyToManyRelationsTest()
-        {
-            DbSchema target = new DbSchema(connectionname);
-            DataTable actual = target.GetTablesManyToManyRelations();
-            Assert.AreEqual(2, actual.Rows.Count);
-
-            System.Console.WriteLine("Τables that belong to manytomany relations");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("ManyToMany Relation: {0}", relationRow["TABLE_NAME"].ToString()));
-            }
-        }
-
-        /// <summary>
         ///A test for GetTablesLogical
         ///</summary>
         [TestMethod()]
         public void GetTablesLogicalTest()
         {
             DbSchema target = new DbSchema(connectionname);
-            DataTable actual = target.GetTablesLogical();
+            DataTable actual = target.GetLogicalTables();
             Assert.AreEqual(11, actual.Rows.Count);
 
             System.Console.WriteLine("Logical tables (w/o manytomany tables");
@@ -198,7 +181,7 @@ namespace Data.Common.Tests
             DbSchema target = new DbSchema(connectionname);
             string tableName = "Employees";
             DataTable actual = target.GetTableOneToManyRelations(tableSchema, tableName);
-            Assert.AreEqual(3, actual.Rows.Count);
+            Assert.AreEqual(2, actual.Rows.Count);
 
             System.Console.WriteLine("One to many relations in table");
             foreach (DataRow relationRow in actual.Rows)
@@ -333,15 +316,32 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
+        ///A test for GetManyToManyTables
+        ///</summary>
+        [TestMethod()]
+        public void GetManyToManyTablesTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            DataTable actual = target.GetManyToManyTables();
+            Assert.AreEqual(2, actual.Rows.Count);
+
+            System.Console.WriteLine("Τables that belong to many-to-many relations:");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("ManyToMany Relation: {0}", relationRow["TABLE_NAME"].ToString()));
+            }
+        }
+
+
+        /// <summary>
         ///A test for DiscoverManyToManyTables
         ///</summary>
         [TestMethod()]
         [DeploymentItem("Data.Common.dll")]
-        public void DiscoverManyToManyTablesTest()
+        public void DiscoverManyToManyRelationsTest()
         {
             DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            target.DiscoverManyToManyTables();
-            Assert.AreEqual(target.GetTables().Rows.Count, target.GetTablesLogical().Rows.Count + target.GetTablesManyToManyRelations().Rows.Count);
+            Assert.AreEqual(target.GetTables().Rows.Count, target.GetLogicalTables().Rows.Count + target.GetManyToManyTables().Rows.Count);
         }
 
         /// <summary>

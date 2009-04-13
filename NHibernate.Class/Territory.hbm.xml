@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Northwind" assembly="NHibernate.Class">
+    <class name="Northwind.Territory, NHibernate.Class" table="[dbo].[Territories]" lazy="true">
+        <id name="TerritoryID" type="String">
+            <column name="TerritoryID" length="20" not-null="false" unique="true" />
+            <generator class="assigned" />
+        </id>
+        <property name="TerritoryDescription" type="String">
+            <column name="TerritoryDescription" length="50" not-null="true" />
+        </property>
+        <many-to-one name="Region" column="RegionID" class="Region" not-null="true" />
+        <set name="Employees" table="EmployeeTerritories" lazy="true" inverse="true">
+            <key column="TerritoryID" />
+            <many-to-many class="Employee" column="EmployeeID" />
+        </set>
+    </class>
+</hibernate-mapping>
+

@@ -1,14 +1,17 @@
 ﻿//
-//  The contents of this file are subject to the Mozilla Public
-//  License Version 1.1 (the "License"); you may not use this file
+//  Data.Common.DbSchema - http://dbschema.codeplex.com
+//
+//  The contents of this file are subject to the New BSD
+//  License (the "License"); you may not use this file
 //  except in compliance with the License. You may obtain a copy of
-//  the License at http://www.mozilla.org/MPL/
+//  the License at http://www.opensource.org/licenses/bsd-license.php
 //
 //  Software distributed under the License is distributed on an 
 //  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
 //  implied. See the License for the specific language governing
 //  rights and limitations under the License.
 //
+
 
 using System.Data;
 using System.Data.Common;
@@ -179,21 +182,21 @@ namespace Data.Common
                     classType = IsNullable ? "double?" : "double";
                     break;
 
+                case "Single":
+                    classType = (IsNullable ? "float?" : "float");
+                    break;
+
                 case "DateTime":
                     classType = (IsNullable ? "DateTime?" : "DateTime");
                     break;
 
-                case "Single":
-                    classType = (IsNullable ? "float?" : "float");
-                    break;
-                                        
                 case "Guid":
                 case "Type":
                     classType = systemType[1];
                     break;
 
                 case "Byte[]":
-                    classType = IsNullable ? "byte?[]" : "byte[]";
+                    classType = "byte[]";
                     break;
 
                 default:
@@ -205,7 +208,7 @@ namespace Data.Common
             return classType;
         }
 
-        abstract public DbType GetDbType(string providerDbType);
+        abstract public DbType GetDbColumnType(string providerDbType);
 
         #endregion
 

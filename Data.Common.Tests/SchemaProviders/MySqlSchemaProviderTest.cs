@@ -160,7 +160,7 @@ namespace Data.Common.Tests
             DbSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             string providerDbType = "18";
             DbType expected = DbType.AnsiString;
-            DbType actual = target.GetDbType(providerDbType);
+            DbType actual = target.GetDbColumnType(providerDbType);
             Assert.AreEqual(expected, actual);
         }
 
