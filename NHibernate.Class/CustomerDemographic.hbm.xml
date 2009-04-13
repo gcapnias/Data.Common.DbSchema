@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Northwind" assembly="NHibernate.Class">
+    <class name="Northwind.CustomerDemographic, NHibernate.Class" table="[dbo].[CustomerDemographics]" lazy="true">
+        <id name="CustomerTypeID" type="String">
+            <column name="CustomerTypeID" length="10" not-null="false" unique="true" />
+            <generator class="assigned" />
+        </id>
+        <property name="CustomerDesc" type="String">
+            <column name="CustomerDesc" length="1073741823" not-null="false" />
+        </property>
+        <set name="Customers" table="CustomerCustomerDemo" lazy="true" inverse="true">
+            <key column="CustomerTypeID" />
+            <many-to-many class="Customer" column="CustomerID" />
+        </set>
+    </class>
+</hibernate-mapping>
+

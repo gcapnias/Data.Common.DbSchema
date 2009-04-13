@@ -1,8 +1,10 @@
 ﻿//
-//  The contents of this file are subject to the Mozilla Public
-//  License Version 1.1 (the "License"); you may not use this file
+//  Data.Common.DbSchema - http://dbschema.codeplex.com
+//
+//  The contents of this file are subject to the New BSD
+//  License (the "License"); you may not use this file
 //  except in compliance with the License. You may obtain a copy of
-//  the License at http://www.mozilla.org/MPL/
+//  the License at http://www.opensource.org/licenses/bsd-license.php
 //
 //  Software distributed under the License is distributed on an 
 //  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
@@ -69,6 +71,7 @@ namespace Data.Common
             _ConnectionString = ConnectionString;
             _ProviderName = ProviderName;
             _Provider = GetSchemaProvider(_ConnectionString, _ProviderName);
+            DiscoverManyToManyTables();
         }
 
         #endregion
@@ -79,7 +82,7 @@ namespace Data.Common
 
         private DataTable GetSchemaTables()
         {
-            string CacheKey = "TablesSchema";
+            string CacheKey = "SchemaTables";
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
@@ -99,7 +102,7 @@ namespace Data.Common
             DataTable tbl = new DataTable("Tables");
             if (schemaTables.Rows.Count > 0)
             {
-                string WhereClause = "TABLE_TYPE='TABLE' OR TABLE_TYPE='BASE TABLE'";
+                string WhereClause = "TABLE_TYPE = 'TABLE' OR TABLE_TYPE = 'BASE TABLE'";
                 tbl = schemaTables.Clone();
                 foreach (DataRow tblRow in schemaTables.Select(WhereClause))
                 {
@@ -109,17 +112,6 @@ namespace Data.Common
 
             Cache.Add(CacheKey, tbl);
             return tbl;
-        }
-
-        public DataTable GetTablesLogical()
-        {
-            string CacheKey = "TablesLogical";
-            if (Cache.Keys.Contains(CacheKey))
-                return Cache[CacheKey];
-
-            DiscoverManyToManyTables();
-
-            return GetTablesLogical();
         }
 
         public DataTable GetViews()
@@ -132,7 +124,7 @@ namespace Data.Common
             DataTable tbl = new DataTable("Views");
             if (schemaTables.Rows.Count > 0)
             {
-                string WhereClause = "TABLE_TYPE='VIEW'";
+                string WhereClause = "TABLE_TYPE = 'VIEW'";
                 tbl = schemaTables.Clone();
                 foreach (DataRow tblRow in schemaTables.Select(WhereClause))
                 {
@@ -142,6 +134,67 @@ namespace Data.Common
 
             Cache.Add(CacheKey, tbl);
             return tbl;
+        }
+
+        public DataTable GetLogicalTables()
+        {
+            string CacheKey = "LogicalTables";
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            DiscoverManyToManyTables();
+
+            return GetLogicalTables();
+        }
+
+        public DataTable GetManyToManyTables()
+        {
+            string CacheKey = "ManyToManyTables";
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            DiscoverManyToManyTables();
+
+            return GetManyToManyTables();
+        }
+
+        private void DiscoverManyToManyTables()
+        {
+            DataTable schemaTables = GetTables();
+            DataTable tblManyToMany = new DataTable("ManyToManyTables");
+            tblManyToMany = schemaTables.Clone();
+            DataTable tblLogical = new DataTable("LogicalTables");
+            tblLogical = schemaTables.Clone();
+
+            dictionaryTablesManyToMany.Clear();
+            foreach (DataRow tableRow in schemaTables.Rows)
+            {
+                string tableSchema = null;
+                if (tableRow["TABLE_SCHEMA"] != DBNull.Value)
+                    tableSchema = tableRow["TABLE_SCHEMA"].ToString();
+                string tableName = tableRow["TABLE_NAME"].ToString();
+
+                string WhereClause;
+                if (!string.IsNullOrEmpty(tableSchema))
+                    WhereClause = string.Format("FK_TABLE_SCHEMA = '{0}' AND FK_TABLE_NAME = '{1}'", tableSchema, tableName);
+                else
+                    WhereClause = string.Format("FK_TABLE_NAME = '{0}'", tableName);
+
+                DataTable relations = GetConstraints();
+                DataRow[] manyToOneRelations = (DataRow[])relations.Select(WhereClause);
+                int tableColumnsCount = GetTableColumns(tableSchema, tableName).Rows.Count;
+
+                if ((manyToOneRelations.Length == tableColumnsCount))
+                {
+                    dictionaryTablesManyToMany.Add(_Provider.QualifiedTableName(tableSchema, tableName));
+                    tblManyToMany.ImportRow(tableRow);
+                }
+                else
+                    tblLogical.ImportRow(tableRow);
+            }
+
+            Cache.Add("ManyToManyTables", tblManyToMany);
+            Cache.Add("LogicalTables", tblLogical);
         }
 
         #endregion
@@ -222,91 +275,100 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetTableManyToOneRelations(string tableSchema, string tableName)
-        {
-            string WhereClause;
-            if (!string.IsNullOrEmpty(tableSchema))
-                WhereClause = string.Format("FK_TABLE_SCHEMA='{0}' AND FK_TABLE_NAME='{1}'", tableSchema, tableName);
-            else
-                WhereClause = string.Format("FK_TABLE_NAME='{0}'", tableName);
-
-            DataTable relations = GetConstraints();
-            DataRow[] fks = (DataRow[])relations.Select(WhereClause);
-            DataTable tbl = relations.Clone();
-            foreach (DataRow fk in fks)
-            {
-                tbl.ImportRow(fk);
-            }
-
-            return tbl;
-        }
-
         public DataTable GetTableOneToManyRelations(string tableSchema, string tableName)
         {
-            string WhereClause;
-            if (!string.IsNullOrEmpty(tableSchema))
-                WhereClause = string.Format("PK_TABLE_SCHEMA='{0}' AND PK_TABLE_NAME='{1}'", tableSchema, tableName);
-            else
-                WhereClause = string.Format("PK_TABLE_NAME='{0}'", tableName);
-
-            DataTable relations = GetConstraints();
-            DataRow[] pks = (DataRow[])relations.Select(WhereClause);
-            DataTable tbl = relations.Clone();
-            foreach (DataRow pk in pks)
-            {
-                string FKTableSchema = null;
-                string FKTablename = null;
-                if (pk["FK_TABLE_SCHEMA"] != DBNull.Value)
-                    FKTableSchema = pk["FK_TABLE_SCHEMA"].ToString();
-                FKTablename = pk["FK_TABLE_NAME"].ToString();
-
-                string tableNameHash = string.IsNullOrEmpty(FKTableSchema) ? FKTablename : FKTableSchema + "." + FKTablename;
-                if (!dictionaryTablesManyToMany.Contains(tableNameHash))
-                    tbl.ImportRow(pk);
-            }
-
-            return tbl;
-        }
-
-        public DataTable GetTablesManyToManyRelations()
-        {
-            string CacheKey = "TablesManyToManyRelations";
+            string CacheKey = "OneToManyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DiscoverManyToManyTables();
+            string WhereClause;
+            if (!string.IsNullOrEmpty(tableSchema))
+                WhereClause = string.Format("PK_TABLE_SCHEMA = '{0}' AND PK_TABLE_NAME = '{1}'", tableSchema, tableName);
+            else
+                WhereClause = string.Format("PK_TABLE_NAME = '{0}'", tableName);
 
-            return GetTablesManyToManyRelations();
-        }
-
-        private void DiscoverManyToManyTables()
-        {
-            DataTable schemaTables = GetTables();
-            DataTable tblManyToMany = new DataTable("TablesManyToManyRelations");
-            tblManyToMany = schemaTables.Clone();
-            DataTable tblLogical = new DataTable("TablesLogical");
-            tblLogical = schemaTables.Clone();
-
-            dictionaryTablesManyToMany.Clear();
-            foreach (DataRow tableRow in schemaTables.Rows)
+            DataTable relations = GetConstraints();
+            DataRow[] otmRelations = (DataRow[])relations.Select(WhereClause);
+            DataTable tbl = relations.Clone();
+            foreach (DataRow relationRow in otmRelations)
             {
-                string tableSchema = null;
-                if (tableRow["TABLE_SCHEMA"] != DBNull.Value)
-                    tableSchema = tableRow["TABLE_SCHEMA"].ToString();
-                string tableName = tableRow["TABLE_NAME"].ToString();
+                string fkTableSchema = null;
+                string fkTableName = null;
+                if (relationRow["FK_TABLE_SCHEMA"] != DBNull.Value)
+                    fkTableSchema = relationRow["FK_TABLE_SCHEMA"].ToString();
+                fkTableName = relationRow["FK_TABLE_NAME"].ToString();
 
-                DataTable manyToOneRelations = GetTableManyToOneRelations(tableSchema, tableName);
-                if (manyToOneRelations.Rows.Count == GetTableColumns(tableSchema, tableName).Rows.Count)
-                {
-                    dictionaryTablesManyToMany.Add(_Provider.QualifiedTableName(tableSchema, tableName));
-                    tblManyToMany.ImportRow(tableRow);
-                }
-                else
-                    tblLogical.ImportRow(tableRow);
+                string tableNameHash = _Provider.QualifiedTableName(fkTableSchema, fkTableName);
+                if (!dictionaryTablesManyToMany.Contains(tableNameHash))
+                    tbl.ImportRow(relationRow);
             }
 
-            Cache.Add("TablesManyToManyRelations", tblManyToMany);
-            Cache.Add("TablesLogical", tblLogical);
+            Cache.Add(CacheKey, tbl);
+            return tbl;
+        }
+
+        public DataTable GetTableManyToOneRelations(string tableSchema, string tableName)
+        {
+            string CacheKey = "ManyToOneRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            string WhereClause;
+            if (!string.IsNullOrEmpty(tableSchema))
+                WhereClause = string.Format("FK_TABLE_SCHEMA = '{0}' AND FK_TABLE_NAME = '{1}'", tableSchema, tableName);
+            else
+                WhereClause = string.Format("FK_TABLE_NAME = '{0}'", tableName);
+
+            DataTable relations = GetConstraints();
+            DataRow[] mtoRelations = (DataRow[])relations.Select(WhereClause);
+            DataTable tbl = relations.Clone();
+            foreach (DataRow relationRow in mtoRelations)
+            {
+                string pkTableSchema = null;
+                string pkTableName = null;
+                if (relationRow["PK_TABLE_SCHEMA"] != DBNull.Value)
+                    pkTableSchema = relationRow["PK_TABLE_SCHEMA"].ToString();
+                pkTableName = relationRow["PK_TABLE_NAME"].ToString();
+
+                string tableNameHash = _Provider.QualifiedTableName(pkTableSchema, pkTableName);
+                if (!dictionaryTablesManyToMany.Contains(tableNameHash))
+                    tbl.ImportRow(relationRow);
+            }
+
+            Cache.Add(CacheKey, tbl);
+            return tbl;
+        }
+
+        public DataTable GetTableManyToManyRelations(string tableSchema, string tableName)
+        {
+            string CacheKey = "ManyToManyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            string WhereClause;
+            if (!string.IsNullOrEmpty(tableSchema))
+                WhereClause = string.Format("PK_TABLE_SCHEMA = '{0}' AND PK_TABLE_NAME = '{1}'", tableSchema, tableName);
+            else
+                WhereClause = string.Format("PK_TABLE_NAME = '{0}'", tableName);
+
+            DataTable relations = GetConstraints();
+            DataRow[] mtmRelations = (DataRow[])relations.Select(WhereClause);
+            DataTable tbl = relations.Clone();
+            foreach (DataRow relationRow in mtmRelations)
+            {
+                string fkTableSchema = null;
+                string fkTableName = null;
+                if (relationRow["FK_TABLE_SCHEMA"] != DBNull.Value)
+                    fkTableSchema = relationRow["FK_TABLE_SCHEMA"].ToString();
+                fkTableName = relationRow["FK_TABLE_NAME"].ToString();
+
+                string tableNameHash = _Provider.QualifiedTableName(fkTableSchema, fkTableName);
+                if (dictionaryTablesManyToMany.Contains(tableNameHash))
+                    tbl.ImportRow(relationRow);
+            }
+
+            Cache.Add(CacheKey, tbl);
+            return tbl;
         }
 
         #endregion
@@ -374,6 +436,26 @@ namespace Data.Common
 
             }
             return dbProvider;
+        }
+
+        public string GetPropertyType(string SystemType)
+        {
+            return this.GetPropertyType(SystemType, false);
+        }
+
+        public string GetPropertyType(string SystemType, bool IsNullable)
+        {
+            return _Provider.GetPropertyType(SystemType, IsNullable);
+        }
+
+        public DbType GetDbColumnType(string providerDbType)
+        {
+            return _Provider.GetDbColumnType(providerDbType);
+        }
+
+        public string QualifiedTableName(string tableSchema, string tableName)
+        {
+            return _Provider.QualifiedTableName(tableSchema, tableName);
         }
 
         #endregion

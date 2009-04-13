@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Northwind" assembly="NHibernate.Class">
+    <class name="Northwind.Shipper, NHibernate.Class" table="[dbo].[Shippers]" lazy="true">
+        <id name="ShipperID" type="Int32">
+            <column name="ShipperID" not-null="false" unique="true" />
+            <generator class="native" />
+        </id>
+        <property name="CompanyName" type="String">
+            <column name="CompanyName" length="40" not-null="true" />
+        </property>
+        <property name="Phone" type="String">
+            <column name="Phone" length="24" not-null="false" />
+        </property>
+        <bag name="Orders" lazy="true" inverse="true" cascade="all-delete-orphan">
+            <key column="ShipperID" />
+            <one-to-many class="Order" />
+        </bag>
+    </class>
+</hibernate-mapping>
+

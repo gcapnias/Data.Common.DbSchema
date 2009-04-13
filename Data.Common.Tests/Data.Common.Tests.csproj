@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbSchemaTest.cs" />
+    <Compile Include="ManyToMany.cs" />
     <Compile Include="SchemaProviders\PostgreSqlSchemaProviderTest.cs" />
     <Compile Include="SchemaProviders\SqlServerSchemaProviderTest.cs" />
     <Compile Include="SchemaProviders\MySqlSchemaProviderTest.cs" />
