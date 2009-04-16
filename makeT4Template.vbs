@@ -1,7 +1,7 @@
 Dim filesDictionary, regEx, fileSystemObj, textWriter, providerName
 Dim codeFile, theCode, regionCode, searchMatches, codeMatches
 Dim codeMatch, providersDictionary, iCounter, providerMatch
-Dim providersToRemove, providers, arrayKeys
+Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
 
     Const outputFile = "Data.Common.ttinclude"
 
@@ -19,40 +19,31 @@ Dim providersToRemove, providers, arrayKeys
     regEx.MultiLine = True
     regEx.IgnoreCase = True
     regEx.Global = True
-    regEx.Pattern = ".*{([\w\W]*)}.*"
     
     Set fileSystemObj = CreateObject("Scripting.FileSystemObject")
     Set textWriter = fileSystemObj.CreateTextFile(outputFile, True, True)
-    Call textWriter.WriteLine("<#@ import namespace=""System.Collections"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Collections.Generic"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Configuration"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Data"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Data.Common"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Linq"" #>")
-    Call textWriter.WriteLine("<#@ import namespace=""System.Reflection"" #>")    
-    Call textWriter.WriteLine("<#+")
-    Call textWriter.WriteLine("//")
-    Call textWriter.WriteLine("//  Data.Common.DbSchema - http://dbschema.codeplex.com")
-    Call textWriter.WriteLine("//")
-    Call textWriter.WriteLine("//  The contents of this file are subject to the New BSD")
-    Call textWriter.WriteLine("//  License (the ""License""); you may not use this file")
-    Call textWriter.WriteLine("//  except in compliance with the License. You may obtain a copy of")
-    Call textWriter.WriteLine("//  the License at http://www.opensource.org/licenses/bsd-license.php")
-    Call textWriter.WriteLine("//")
-    Call textWriter.WriteLine("//  Software distributed under the License is distributed on an")
-    Call textWriter.WriteLine("//  ""AS IS"" basis, WITHOUT WARRANTY OF ANY KIND, either express or")
-    Call textWriter.WriteLine("//  implied. See the License for the specific language governing")
-    Call textWriter.WriteLine("//  rights and limitations under the License.")
-    Call textWriter.WriteLine("//")
-    Call textWriter.WriteBlankLines(2)
 
     Set providersDictionary = CreateObject("Scripting.Dictionary")
+    Set importednamespaces = CreateObject("Scripting.Dictionary")
     For iCounter = 0 To filesDictionary.Count - 1
         arrayKeys = filesDictionary.Keys
         providerName = arrayKeys(iCounter)
     
         Set codeFile = fileSystemObj.OpenTextFile(filesDictionary(providerName), 1, False)  ' ForReading=1
         theCode = codeFile.ReadAll
+        
+		regEx.Pattern = "^using (.*);$"
+        If regEx.Test(theCode) Then
+            Set searchMatches = regEx.Execute(theCode)
+            For Each codeMatch In searchMatches
+                namespace = codeMatch.SubMatches(0)
+                If Not importednamespaces.Exists(namespace) Then
+					Call importednamespaces.Add(namespace, "Imported Namespace")
+                End If
+            Next
+		End If
+		
+		regEx.Pattern = ".*{([\w\W]*)}.*"
         If regEx.Test(theCode) Then
             Call textWriter.WriteLine(vbTab & "// " & providerName)
             Set searchMatches = regEx.Execute(theCode)
@@ -112,6 +103,27 @@ Dim providersToRemove, providers, arrayKeys
     End If
     
     Set codeFile = fileSystemObj.OpenTextFile(outputFile, 2, False) ' ForWriting=2
+    Call codeFile.WriteLine("<#@ assembly name=""System.Core"" #>")
+	For iCounter = 0 To importednamespaces.Count - 1
+        arrayKeys = importednamespaces.Keys
+        namespace = arrayKeys(iCounter)
+		Call codeFile.WriteLine("<#@ import namespace=""" & namespace & """ #>")
+	Next
+    Call codeFile.WriteLine("<#+")
+    Call codeFile.WriteLine("//")
+    Call codeFile.WriteLine("//  Data.Common.DbSchema - http://dbschema.codeplex.com")
+    Call codeFile.WriteLine("//")
+    Call codeFile.WriteLine("//  The contents of this file are subject to the New BSD")
+    Call codeFile.WriteLine("//  License (the ""License""); you may not use this file")
+    Call codeFile.WriteLine("//  except in compliance with the License. You may obtain a copy of")
+    Call codeFile.WriteLine("//  the License at http://www.opensource.org/licenses/bsd-license.php")
+    Call codeFile.WriteLine("//")
+    Call codeFile.WriteLine("//  Software distributed under the License is distributed on an")
+    Call codeFile.WriteLine("//  ""AS IS"" basis, WITHOUT WARRANTY OF ANY KIND, either express or")
+    Call codeFile.WriteLine("//  implied. See the License for the specific language governing")
+    Call codeFile.WriteLine("//  rights and limitations under the License.")
+    Call codeFile.WriteLine("//")
+    Call codeFile.WriteBlankLines(2)    
     Call codeFile.Write(theCode)
     codeFile.Close
     Set codeFile = Nothing
