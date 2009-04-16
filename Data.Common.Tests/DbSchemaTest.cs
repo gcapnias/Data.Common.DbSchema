@@ -103,38 +103,20 @@ namespace Data.Common.Tests
             Assert.AreEqual(connectionname, actual);
         }
 
-        /// <summary>
-        ///A test for GetViews
-        ///</summary>
-        [TestMethod()]
-        public void GetViewsTest()
-        {
-            DbSchema target = new DbSchema(connectionname);
-            DataTable actual = target.GetViews();
-            Assert.AreEqual(16, actual.Rows.Count);
+        #region ' Methods '
 
-            System.Console.WriteLine("Views in database");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("View: {0}", relationRow["TABLE_NAME"].ToString()));
-            }
-        }
+        #region ' Tables and Views '
 
         /// <summary>
-        ///A test for GetTablesLogical
+        ///A test for GetSchemaTables
         ///</summary>
         [TestMethod()]
-        public void GetTablesLogicalTest()
+        [DeploymentItem("Data.Common.dll")]
+        public void GetSchemaTablesTest()
         {
-            DbSchema target = new DbSchema(connectionname);
-            DataTable actual = target.GetLogicalTables();
-            Assert.AreEqual(11, actual.Rows.Count);
-
-            System.Console.WriteLine("Logical tables (w/o manytomany tables");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("Table: {0}", relationRow["TABLE_NAME"].ToString()));
-            }
+            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            DataTable actual = target.GetSchemaTables();
+            Assert.AreEqual(29, actual.Rows.Count);
         }
 
         /// <summary>
@@ -155,10 +137,111 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
-        ///A test for GetTablePrimaryKeys
+        ///A test for GetViews
         ///</summary>
         [TestMethod()]
-        public void GetTablePrimaryKeysTest()
+        public void GetViewsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            DataTable actual = target.GetViews();
+            Assert.AreEqual(16, actual.Rows.Count);
+
+            System.Console.WriteLine("Views in database");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("View: {0}", relationRow["TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetTablesAndViews
+        ///</summary>
+        [TestMethod()]
+        public void GetTablesAndViewsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            DataTable actual = target.GetTablesAndViews();
+            Assert.AreEqual(29, actual.Rows.Count);
+
+            System.Console.WriteLine("Tables & Views in database");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table or View: {0}", relationRow["TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetLogicalTables
+        ///</summary>
+        [TestMethod()]
+        public void GetLogicalTablesTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            DataTable actual = target.GetLogicalTables();
+            Assert.AreEqual(11, actual.Rows.Count);
+
+            System.Console.WriteLine("Logical tables (w/o manytomany tables");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetManyToManyTables
+        ///</summary>
+        [TestMethod()]
+        public void GetManyToManyTablesTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            DataTable actual = target.GetManyToManyTables();
+            Assert.AreEqual(2, actual.Rows.Count);
+
+            System.Console.WriteLine("Τables that belong to many-to-many relations:");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("ManyToMany Relation: {0}", relationRow["TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for DiscoverTableRelations
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("Data.Common.dll")]
+        public void DiscoverTableRelationsTest()
+        {
+            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            Assert.AreEqual(target.GetTables().Rows.Count, target.GetLogicalTables().Rows.Count + target.GetManyToManyTables().Rows.Count);
+        }
+
+        #endregion
+
+        #region ' Columns and Primary Keys '
+
+        /// <summary>
+        ///A test for GetTableColumns
+        ///</summary>
+        [TestMethod()]
+        public void GetTableColumnsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "Employees";
+            DataTable actual = target.GetTableColumns(tableSchema, tableName);
+            Assert.AreEqual(18, actual.Rows.Count);
+
+            System.Console.WriteLine("All columns in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetTablePrimaryKeyColumns
+        ///</summary>
+        [TestMethod()]
+        public void GetTablePrimaryKeyColumnsTest()
         {
             DbSchema target = new DbSchema(connectionname);
             string tableName = "EmployeeTerritories";
@@ -169,42 +252,6 @@ namespace Data.Common.Tests
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
-            }
-        }
-
-        /// <summary>
-        ///A test for GetTableOneToManyRelations
-        ///</summary>
-        [TestMethod()]
-        public void GetTableOneToManyRelationsTest()
-        {
-            DbSchema target = new DbSchema(connectionname);
-            string tableName = "Employees";
-            DataTable actual = target.GetTableOneToManyRelations(tableSchema, tableName);
-            Assert.AreEqual(2, actual.Rows.Count);
-
-            System.Console.WriteLine("One to many relations in table");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("Table: {0}", relationRow["FK_TABLE_NAME"].ToString()));
-            }
-        }
-
-        /// <summary>
-        ///A test for GetTableManyToOneRelations
-        ///</summary>
-        [TestMethod()]
-        public void GetTableManyToOneRelationsTest()
-        {
-            DbSchema target = new DbSchema(connectionname);
-            string tableName = "EmployeeTerritories"; // TODO: Initialize to an appropriate value
-            DataTable actual = target.GetTableManyToOneRelations(tableSchema, tableName);
-            Assert.AreEqual(2, actual.Rows.Count);
-
-            System.Console.WriteLine("Many to one relations in table");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
             }
         }
 
@@ -226,47 +273,133 @@ namespace Data.Common.Tests
             }
         }
 
+        #endregion
+
+        #region ' Relations '
+
         /// <summary>
-        ///A test for GetTableColumns
+        ///A test for GetConstraints
         ///</summary>
         [TestMethod()]
-        public void GetTableColumnsTest()
+        [DeploymentItem("Data.Common.dll")]
+        public void GetConstraintsTest()
+        {
+            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            DataTable actual = target.GetConstraints();
+            Assert.AreEqual(13, actual.Rows.Count);
+        }
+
+        /// <summary>
+        ///A test for GetTableOneToManyRelations
+        ///</summary>
+        [TestMethod()]
+        public void GetTableOneToManyRelationsTest()
         {
             DbSchema target = new DbSchema(connectionname);
             string tableName = "Employees";
-            DataTable actual = target.GetTableColumns(tableSchema, tableName);
-            Assert.AreEqual(18, actual.Rows.Count);
+            DataTable actual = target.GetTableOneToManyRelations(tableSchema, tableName);
+            Assert.AreEqual(2, actual.Rows.Count);
 
-            System.Console.WriteLine("All columns in table");
+            System.Console.WriteLine("One-to-Many relations in table");
             foreach (DataRow relationRow in actual.Rows)
             {
-                System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["FK_TABLE_NAME"].ToString()));
             }
         }
 
         /// <summary>
-        ///A test for GetSchemaTables
+        ///A test for GetPrimaryKeyRelations
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Data.Common.dll")]
-        public void GetSchemaTablesTest()
+        public void GetPrimaryKeyRelationsTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(29, actual.Rows.Count);
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "Employees";
+            DataTable actual = target.GetPrimaryKeyRelations(tableSchema, tableName);
+            Assert.AreEqual(3, actual.Rows.Count);
+
+            System.Console.WriteLine("Primary key relations in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["FK_TABLE_NAME"].ToString()));
+            }
         }
 
         /// <summary>
-        ///A test for GetSchemaProvider
+        ///A test for GetTableManyToOneRelations
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Data.Common.dll")]
-        public void GetSchemaProviderTest()
+        public void GetTableManyToOneRelationsTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            DbSchemaProvider actual = target.GetSchemaProvider(connectionstring, providername);
-            Assert.AreEqual("Data.Common.SqlServerSchemaProvider", actual.GetType().ToString());
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "EmployeeTerritories";
+            DataTable actual = target.GetTableManyToOneRelations(tableSchema, tableName);
+            Assert.AreEqual(2, actual.Rows.Count);
+
+            System.Console.WriteLine("Many-to-One relations in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
+            }
         }
+
+        /// <summary>
+        ///A test for GetForeignKeyRelations
+        ///</summary>
+        [TestMethod()]
+        public void GetForeignKeyRelationsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "EmployeeTerritories";
+            DataTable actual = target.GetForeignKeyRelations(tableSchema, tableName);
+            Assert.AreEqual(2, actual.Rows.Count);
+
+            System.Console.WriteLine("Foreign key relations in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetTableManyToManyRelations
+        ///</summary>
+        [TestMethod()]
+        public void GetTableManyToManyRelationsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "Employees";
+            DataTable actual = target.GetTableManyToManyRelations(tableSchema, tableName);
+            Assert.AreEqual(1, actual.Rows.Count);
+
+            System.Console.WriteLine("Many-to-many relations in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
+            }
+        }
+
+        /// <summary>
+        ///A test for GetTableOneToOneRelations
+        ///</summary>
+        [TestMethod()]
+        public void GetTableOneToOneRelationsTest()
+        {
+            DbSchema target = new DbSchema(connectionname);
+            string tableName = "Employees";
+            DataTable actual = target.GetTableOneToOneRelations(tableSchema, tableName);
+            Assert.AreEqual(0, actual.Rows.Count);
+
+            System.Console.WriteLine("One-to-One relations in table");
+            foreach (DataRow relationRow in actual.Rows)
+            {
+                System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
+            }
+        }
+
+        #endregion
+
+        #region ' Store Procedures '
 
         /// <summary>
         ///A test for GetProcedures
@@ -303,46 +436,25 @@ namespace Data.Common.Tests
             }
         }
 
+        #endregion
+
+        #endregion
+
+        #region ' Helpers '
+
         /// <summary>
-        ///A test for GetConstraints
+        ///A test for GetSchemaProvider
         ///</summary>
         [TestMethod()]
         [DeploymentItem("Data.Common.dll")]
-        public void GetConstraintsTest()
+        public void GetSchemaProviderTest()
         {
             DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            DataTable actual = target.GetConstraints();
-            Assert.AreEqual(13, actual.Rows.Count);
+            DbSchemaProvider actual = target.GetSchemaProvider(connectionstring, providername);
+            Assert.AreEqual("Data.Common.SqlServerSchemaProvider", actual.GetType().ToString());
         }
 
-        /// <summary>
-        ///A test for GetManyToManyTables
-        ///</summary>
-        [TestMethod()]
-        public void GetManyToManyTablesTest()
-        {
-            DbSchema target = new DbSchema(connectionname);
-            DataTable actual = target.GetManyToManyTables();
-            Assert.AreEqual(2, actual.Rows.Count);
-
-            System.Console.WriteLine("Τables that belong to many-to-many relations:");
-            foreach (DataRow relationRow in actual.Rows)
-            {
-                System.Console.WriteLine(string.Format("ManyToMany Relation: {0}", relationRow["TABLE_NAME"].ToString()));
-            }
-        }
-
-
-        /// <summary>
-        ///A test for DiscoverManyToManyTables
-        ///</summary>
-        [TestMethod()]
-        [DeploymentItem("Data.Common.dll")]
-        public void DiscoverManyToManyRelationsTest()
-        {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            Assert.AreEqual(target.GetTables().Rows.Count, target.GetLogicalTables().Rows.Count + target.GetManyToManyTables().Rows.Count);
-        }
+        #endregion
 
         /// <summary>
         ///A test for DbSchema Constructor
