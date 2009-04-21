@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,31 @@ namespace Data.Common.Tests
     [TestClass]
     public class ManyToMany
     {
-        const string ConnectionName = "Northwind";
+        string ConnectionName;
+        string tableSchema;
 
         public ManyToMany()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            ConnectionName = Properties.Settings.Default.ConnectionName;
+            string ProviderName = ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName;
+
+            switch (ProviderName.ToLower())
+            {
+                case "mysql.data.mysqlclient":
+                case "system.data.oracleclient":
+                    tableSchema = "northwind";
+                    break;
+
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                case "system.data.sqlite":
+                    tableSchema = null;
+                    break;
+
+                default:
+                    tableSchema = "dbo";
+                    break;
+            }
         }
 
         private TestContext testContextInstance;
@@ -85,7 +104,6 @@ namespace Data.Common.Tests
         [TestMethod]
         public void ManyToManyTest()
         {
-            string tableSchema = "dbo";
             string tableName = "Customers";
             string foundTableSchema = null;
             string foundTableName = null;
@@ -110,14 +128,13 @@ namespace Data.Common.Tests
                 }
             }
 
-            Assert.AreEqual("dbo", foundTableSchema);
-            Assert.AreEqual("CustomerDemographics", foundTableName);
+            Assert.AreEqual(tableSchema, foundTableSchema);
+            Assert.AreEqual("customerdemographics", foundTableName.ToLower());
         }
 
         [TestMethod]
         public void FindTableRelations()
         {
-            string tableSchema = "dbo";
             string tableName = "Territories";
             DbSchema schema = new DbSchema(ConnectionName);
 

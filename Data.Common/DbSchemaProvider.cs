@@ -119,19 +119,22 @@ namespace Data.Common
                 int counter = 1;
                 foreach (DbParameter p in _Command.Parameters)
                 {
-                    DataRow parameterRow = tbl.NewRow();
-                    if (!string.IsNullOrEmpty(procedureSchema))
-                        parameterRow["SPECIFIC_SCHEMA"] = procedureSchema;
-                    parameterRow["SPECIFIC_NAME"] = procedureName;
-                    parameterRow["PARAMETER_NAME"] = p.ParameterName;
-                    parameterRow["ORDINAL_POSITION"] = counter;
-                    parameterRow["PARAMETER_MODE"] = p.Direction;
-                    parameterRow["IS_RESULT"] = p.Direction == ParameterDirection.ReturnValue;
-                    parameterRow["DATA_TYPE"] = p.DbType;
-                    parameterRow["CHARACTER_MAXIMUM_LENGTH"] = p.Size;
+                    if (p.ParameterName != "@RETURN_VALUE")
+                    {
+                        DataRow parameterRow = tbl.NewRow();
+                        if (!string.IsNullOrEmpty(procedureSchema))
+                            parameterRow["SPECIFIC_SCHEMA"] = procedureSchema;
+                        parameterRow["SPECIFIC_NAME"] = procedureName;
+                        parameterRow["PARAMETER_NAME"] = p.ParameterName;
+                        parameterRow["ORDINAL_POSITION"] = counter;
+                        parameterRow["PARAMETER_MODE"] = p.Direction;
+                        parameterRow["IS_RESULT"] = p.Direction == ParameterDirection.ReturnValue;
+                        parameterRow["DATA_TYPE"] = p.DbType;
+                        parameterRow["CHARACTER_MAXIMUM_LENGTH"] = p.Size;
 
-                    tbl.Rows.Add(parameterRow);
-                    counter++;
+                        tbl.Rows.Add(parameterRow);
+                        counter++;
+                    }
                 }
             }
 

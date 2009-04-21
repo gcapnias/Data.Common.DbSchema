@@ -40,7 +40,7 @@ namespace Data.Common
 
         public override DataTable GetSchemaTables()
         {
-            DataTable tbl = base.GetDTSchemaTables();
+            DataTable tbl = GetDTSchemaTables();
             using (DbConnection _Connection = GetDBConnection())
             {
                 DbCommand _Command = _Connection.CreateCommand();
@@ -51,25 +51,9 @@ namespace Data.Common
             return tbl;
         }
 
-        public override string QualifiedTableName(string tableSchema, string tableName)
-        {
-            if (!string.IsNullOrEmpty(tableSchema))
-                return string.Format("{0}.{1}", DoubleQuoteIfNeeded(tableSchema), DoubleQuoteIfNeeded(tableName));
-            else
-                return string.Format("{0}", DoubleQuoteIfNeeded(tableName));
-        }
-
-        private string DoubleQuoteIfNeeded(string variable)
-        {
-            if (variable.IndexOf(' ') > -1)
-                return string.Format("\"{0}\"", variable);
-            else
-                return variable;
-        }
-
         public override DataTable GetProcedures()
         {
-            DataTable tbl = base.GetDTSchemaProcedures();
+            DataTable tbl = GetDTSchemaProcedures();
             using (DbConnection _Connection = GetDBConnection())
             {
                 DbCommand _Command = _Connection.CreateCommand();
@@ -154,6 +138,22 @@ namespace Data.Common
                 default:
                     return DbType.AnsiString;
             }
+        }
+
+        public override string QualifiedTableName(string tableSchema, string tableName)
+        {
+            if (!string.IsNullOrEmpty(tableSchema))
+                return string.Format("{0}.{1}", DoubleQuoteIfNeeded(tableSchema), DoubleQuoteIfNeeded(tableName));
+            else
+                return string.Format("{0}", DoubleQuoteIfNeeded(tableName));
+        }
+
+        private string DoubleQuoteIfNeeded(string variable)
+        {
+            if (variable.IndexOf(' ') > -1)
+                return string.Format("\"{0}\"", variable);
+            else
+                return variable;
         }
 
         #endregion
