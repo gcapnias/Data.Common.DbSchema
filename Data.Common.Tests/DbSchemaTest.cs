@@ -14,12 +14,53 @@ namespace Data.Common.Tests
     [TestClass()]
     public class DbSchemaTest
     {
-        const string connectionname = "Northwind";
-        string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
-        string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
-        string tableSchema = "dbo";
-        string procedureSchema = "dbo";
+        string ConnectionName;
+        string ConnectionString;
+        string ProviderName;
+        string tableSchema;
+        string procedureSchema;
+        string outputProviderName;
 
+        public DbSchemaTest()
+        {
+            ConnectionName = Properties.Settings.Default.ConnectionName;
+            ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString;
+            ProviderName = ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName;
+
+            switch (ProviderName.ToLower())
+            {
+                case "mysql.data.mysqlclient":
+                    tableSchema = "northwind";
+                    procedureSchema = "northwind";
+                    outputProviderName = "Data.Common.MySqlSchemaProvider";
+                    break;
+
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                    tableSchema = null;
+                    procedureSchema = null;
+                    outputProviderName = "Data.Common.SqlServerCeSchemaProvider";
+                    break;
+
+                case "system.data.sqlite":
+                    tableSchema = null;
+                    procedureSchema = null;
+                    outputProviderName = "Data.Common.SQLiteSchemaProvider";
+                    break;
+
+                case "system.data.oracleclient":
+                    tableSchema = "northwind";
+                    procedureSchema = "northwind";
+                    outputProviderName = "Data.Common.OracleSchemaProvider";
+                    break;
+
+                default:
+                    tableSchema = "dbo";
+                    procedureSchema = "dbo";
+                    outputProviderName = "Data.Common.SqlServerSchemaProvider";
+                    break;
+            }
+        }
 
         private TestContext testContextInstance;
 
@@ -76,9 +117,9 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void ProviderNameTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string actual = target.ProviderName;
-            Assert.AreEqual(providername, actual);
+            Assert.AreEqual(ProviderName, actual);
         }
 
         /// <summary>
@@ -87,9 +128,9 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void ConnectionStringTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string actual = target.ConnectionString;
-            Assert.AreEqual(connectionstring, actual);
+            Assert.AreEqual(ConnectionString, actual);
         }
 
         /// <summary>
@@ -98,9 +139,9 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void ConnectionNameTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string actual = target.ConnectionName;
-            Assert.AreEqual(connectionname, actual);
+            Assert.AreEqual(ConnectionName, actual);
         }
 
         #region ' Methods '
@@ -114,9 +155,23 @@ namespace Data.Common.Tests
         [DeploymentItem("Data.Common.dll")]
         public void GetSchemaTablesTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            DbSchema_Accessor target = new DbSchema_Accessor(ConnectionName);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(29, actual.Rows.Count);
+            string message;
+
+            switch (ProviderName.ToLower())
+            {
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                    message = string.Format("Expected <13> or more. Actual <{0}>.", actual.Rows.Count);
+                    Assert.IsTrue(actual.Rows.Count >= 13, message);
+                    break;
+
+                default:
+                    message = string.Format("Expected <29> or more. Actual <{0}>.", actual.Rows.Count);
+                    Assert.IsTrue(actual.Rows.Count >= 29, message);
+                    break;
+            }
         }
 
         /// <summary>
@@ -125,7 +180,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTablesTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetTables();
             Assert.AreEqual(13, actual.Rows.Count);
 
@@ -142,15 +197,27 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetViewsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetViews();
-            Assert.AreEqual(16, actual.Rows.Count);
 
             System.Console.WriteLine("Views in database");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("View: {0}", relationRow["TABLE_NAME"].ToString()));
             }
+
+            switch (ProviderName.ToLower())
+            {
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                    Assert.AreEqual(0, actual.Rows.Count);
+                    break;
+
+                default:
+                    Assert.AreEqual(16, actual.Rows.Count);
+                    break;
+            }
+
         }
 
         /// <summary>
@@ -159,15 +226,27 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTablesAndViewsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetTablesAndViews();
-            Assert.AreEqual(29, actual.Rows.Count);
 
             System.Console.WriteLine("Tables & Views in database");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table or View: {0}", relationRow["TABLE_NAME"].ToString()));
             }
+
+            switch (ProviderName.ToLower())
+            {
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                    Assert.AreEqual(13, actual.Rows.Count);
+                    break;
+
+                default:
+                    Assert.AreEqual(29, actual.Rows.Count);
+                    break;
+            }
+
         }
 
         /// <summary>
@@ -176,15 +255,16 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetLogicalTablesTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetLogicalTables();
-            Assert.AreEqual(11, actual.Rows.Count);
 
             System.Console.WriteLine("Logical tables (w/o manytomany tables");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["TABLE_NAME"].ToString()));
             }
+
+            Assert.AreEqual(11, actual.Rows.Count);
         }
 
         /// <summary>
@@ -193,7 +273,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetManyToManyTablesTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetManyToManyTables();
             Assert.AreEqual(2, actual.Rows.Count);
 
@@ -211,7 +291,7 @@ namespace Data.Common.Tests
         [DeploymentItem("Data.Common.dll")]
         public void DiscoverTableRelationsTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            DbSchema_Accessor target = new DbSchema_Accessor(ConnectionName);
             Assert.AreEqual(target.GetTables().Rows.Count, target.GetLogicalTables().Rows.Count + target.GetManyToManyTables().Rows.Count);
         }
 
@@ -225,7 +305,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableColumnsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
             Assert.AreEqual(18, actual.Rows.Count);
@@ -243,7 +323,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTablePrimaryKeyColumnsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "EmployeeTerritories";
             DataTable actual = target.GetTablePrimaryKeyColumns(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
@@ -261,7 +341,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableFieldsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetTableFields(tableSchema, tableName);
             Assert.AreEqual(16, actual.Rows.Count);
@@ -284,9 +364,22 @@ namespace Data.Common.Tests
         [DeploymentItem("Data.Common.dll")]
         public void GetConstraintsTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
+            DbSchema_Accessor target = new DbSchema_Accessor(ConnectionName);
             DataTable actual = target.GetConstraints();
-            Assert.AreEqual(13, actual.Rows.Count);
+
+            foreach (DataRow constraint in actual.Rows)
+            {
+                System.Console.WriteLine("PK Schema: " + constraint["PK_TABLE_SCHEMA"].ToString());
+                System.Console.WriteLine("PK Table : " + constraint["PK_TABLE_NAME"].ToString());
+                System.Console.WriteLine("PK Column: " + constraint["PK_COLUMN_NAME"].ToString());
+                System.Console.WriteLine("FK Schema: " + constraint["FK_TABLE_SCHEMA"].ToString());
+                System.Console.WriteLine("FK Table : " + constraint["FK_TABLE_NAME"].ToString());
+                System.Console.WriteLine("FK Column: " + constraint["FK_COLUMN_NAME"].ToString());
+                System.Console.WriteLine();
+            }
+
+            string message = string.Format("Expected <13> or more. Actual <{0}>.", actual.Rows.Count);
+            Assert.IsTrue(actual.Rows.Count >= 13, message);
         }
 
         /// <summary>
@@ -295,7 +388,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableOneToManyRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetTableOneToManyRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
@@ -313,7 +406,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetPrimaryKeyRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetPrimaryKeyRelations(tableSchema, tableName);
             Assert.AreEqual(3, actual.Rows.Count);
@@ -331,7 +424,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableManyToOneRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "EmployeeTerritories";
             DataTable actual = target.GetTableManyToOneRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
@@ -349,7 +442,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetForeignKeyRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "EmployeeTerritories";
             DataTable actual = target.GetForeignKeyRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
@@ -367,7 +460,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableManyToManyRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetTableManyToManyRelations(tableSchema, tableName);
             Assert.AreEqual(1, actual.Rows.Count);
@@ -385,7 +478,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetTableOneToOneRelationsTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string tableName = "Employees";
             DataTable actual = target.GetTableOneToOneRelations(tableSchema, tableName);
             Assert.AreEqual(0, actual.Rows.Count);
@@ -407,15 +500,28 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetProceduresTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(7, actual.Rows.Count);
 
             System.Console.WriteLine("Procedures in database");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Procedure: {0}", relationRow["ROUTINE_NAME"].ToString()));
             }
+
+            switch (ProviderName.ToLower())
+            {
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                case "system.data.sqlite":
+                    Assert.AreEqual(0, actual.Rows.Count);
+                    break;
+
+                default:
+                    Assert.AreEqual(7, actual.Rows.Count);
+                    break;
+            }
+
         }
 
         /// <summary>
@@ -424,15 +530,27 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void GetProcedureParametersTest()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             string procedureName = "CustOrderHist";
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
-            Assert.AreEqual(2, actual.Rows.Count);
 
             System.Console.WriteLine("Parmeters in Procedure");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Parameter: {0}", relationRow["PARAMETER_NAME"].ToString()));
+            }
+
+            switch (ProviderName.ToLower())
+            {
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                case "system.data.sqlite":
+                    Assert.AreEqual(0, actual.Rows.Count);
+                    break;
+
+                default:
+                    Assert.AreEqual(1, actual.Rows.Count);
+                    break;
             }
         }
 
@@ -449,9 +567,9 @@ namespace Data.Common.Tests
         [DeploymentItem("Data.Common.dll")]
         public void GetSchemaProviderTest()
         {
-            DbSchema_Accessor target = new DbSchema_Accessor(connectionname);
-            DbSchemaProvider actual = target.GetSchemaProvider(connectionstring, providername);
-            Assert.AreEqual("Data.Common.SqlServerSchemaProvider", actual.GetType().ToString());
+            DbSchema_Accessor target = new DbSchema_Accessor(ConnectionName);
+            DbSchemaProvider actual = target.GetSchemaProvider(ConnectionString, ProviderName);
+            Assert.AreEqual(outputProviderName, actual.GetType().ToString());
         }
 
         #endregion
@@ -474,7 +592,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void DbSchemaConstructorTest1()
         {
-            DbSchema target = new DbSchema(connectionname);
+            DbSchema target = new DbSchema(ConnectionName);
             DataTable tables = target.GetTables();
             Assert.IsNotNull(target);
             Assert.AreEqual(13, tables.Rows.Count);
@@ -486,7 +604,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void DbSchemaConstructorTest2()
         {
-            DbSchema target = new DbSchema(connectionstring, providername);
+            DbSchema target = new DbSchema(ConnectionString, ProviderName);
             DataTable tables = target.GetTables();
             Assert.IsNotNull(target);
             Assert.AreEqual(13, tables.Rows.Count);

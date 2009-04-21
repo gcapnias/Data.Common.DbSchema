@@ -229,17 +229,21 @@ namespace Data.Common
 
             DataTable tbl = new DataTable();
             DataTable tableColumns = _Provider.GetTableColumns(tableSchema, tableName);
-            if (tableColumns.Select("IsHidden = 1").Length > 0)
+            if (tableColumns.Columns.Contains("IsHidden"))
             {
-                tbl = tableColumns.Clone();
-                foreach (DataRow columnRow in tableColumns.Select("IsHidden = 0"))
+                if (tableColumns.Select("IsHidden = 1").Length > 0)
                 {
-                    tbl.ImportRow(columnRow);
+                    tbl = tableColumns.Clone();
+                    foreach (DataRow columnRow in tableColumns.Select("IsHidden = 0 OR IsHidden IS NULL"))
+                    {
+                        tbl.ImportRow(columnRow);
+                    }
                 }
+                else
+                    tbl = tableColumns;
             }
             else
                 tbl = tableColumns;
-
 
             Cache.Add(CacheKey, tbl);
             return tbl;
@@ -488,7 +492,17 @@ namespace Data.Common
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable tbl = _Provider.GetProcedures();
+            DataTable tblProcedures = _Provider.GetProcedures();
+            DataTable tbl = new DataTable("Procedures");
+            if (tblProcedures.Rows.Count > 0)
+            {
+                string WhereClause = "ROUTINE_TYPE = 'PROCEDURE'";
+                tbl = tblProcedures.Clone();
+                foreach (DataRow tblRow in tblProcedures.Select(WhereClause))
+                {
+                    tbl.ImportRow(tblRow);
+                }
+            }
 
             Cache.Add(CacheKey, tbl);
             return tbl;
@@ -536,6 +550,14 @@ namespace Data.Common
 
                 case "npgsql":
                     dbProvider = new PostgreSqlSchemaProvider(connectionString, providerName);
+                    break;
+
+                case "system.data.sqlite":
+                    dbProvider = new SQLiteSchemaProvider(connectionString, providerName);
+                    break;
+
+                case "system.data.oracleclient":
+                    dbProvider = new OracleSchemaProvider(connectionString, providerName);
                     break;
 
                 default:

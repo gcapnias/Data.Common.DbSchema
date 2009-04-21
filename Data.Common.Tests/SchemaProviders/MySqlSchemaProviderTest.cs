@@ -22,7 +22,7 @@ namespace Data.Common.Tests
         string tableSchema = "northwind";
         string tableName = "Employees";
         string procedureSchema = "northwind";
-        string procedureName = "CustOrdersOrders";
+        string procedureName = "SalesByCategory";
 
         private TestContext testContextInstance;
 
@@ -104,7 +104,7 @@ namespace Data.Common.Tests
         {
             MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(13, actual.Rows.Count);
+            Assert.AreEqual(29, actual.Rows.Count);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Data.Common.Tests
         {
             MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(6, actual.Rows.Count);
+            Assert.AreEqual(7, actual.Rows.Count);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Data.Common.Tests
         {
             MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
-            Assert.AreEqual(1, actual.Rows.Count);
+            Assert.AreEqual(2, actual.Rows.Count);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Data.Common.Tests
         {
             MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
-            Assert.AreEqual(17, actual.Rows.Count);
+            Assert.AreEqual(13, actual.Rows.Count);
         }
 
         /// <summary>

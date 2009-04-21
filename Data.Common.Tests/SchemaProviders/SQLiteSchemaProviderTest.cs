@@ -8,18 +8,18 @@ using Data.Common;
 namespace Data.Common.Tests
 {
     /// <summary>
-    ///This is a test class for SqlServerProviderTest and is intended
-    ///to contain all SqlServerProviderTest Unit Tests
+    ///This is a test class for SQLiteProviderTest and is intended
+    ///to contain all SQLiteProviderTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SqlServerSchemaProviderTest
+    public class SQLiteSchemaProviderTest
     {
-        const string connectionname = "Northwind";
+        const string connectionname = "NorthwindSQLite";
         string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
         string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
-        string tableSchema = "dbo";
+        string tableSchema = null;
         string tableName = "Employees";
-        string procedureSchema = "dbo";
+        string procedureSchema = null;
         string procedureName = "SalesByCategory";
 
         private TestContext testContextInstance;
@@ -75,10 +75,10 @@ namespace Data.Common.Tests
         ///A test for QualifiedTableName
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderQualifiedTableNameTest()
+        public void SQLiteProviderQualifiedTableNameTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
-            string expected = "[dbo].[Employees]";
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            string expected = "[Employees]";
             string actual = target.QualifiedTableName(tableSchema, tableName);
             Assert.AreEqual(expected, actual);
         }
@@ -87,9 +87,9 @@ namespace Data.Common.Tests
         ///A test for GetTableColumns
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetTableColumnsTest()
+        public void SQLiteProviderGetTableColumnsTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
             Assert.AreEqual(18, actual.Rows.Count);
         }
@@ -98,31 +98,32 @@ namespace Data.Common.Tests
         ///A test for GetSchemaTables
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetSchemaTablesTest()
+        public void SQLiteProviderGetSchemaTablesTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(29, actual.Rows.Count);
+            string message = string.Format("Expected <29> or more. Actual <{0}>.", actual.Rows.Count);
+            Assert.IsTrue(actual.Rows.Count >= 29, message);
         }
 
         /// <summary>
         ///A test for GetProcedures
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetProceduresTest()
+        public void SQLiteProviderGetProceduresTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(7, actual.Rows.Count);
+            Assert.AreEqual(0, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetProcedureParameters
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetProcedureParametersTest()
+        public void SQLiteProviderGetProcedureParametersTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
 
             System.Console.WriteLine("Parmeters in Procedure");
@@ -131,16 +132,16 @@ namespace Data.Common.Tests
                 System.Console.WriteLine(string.Format("Parameter: {0}", relationRow["PARAMETER_NAME"].ToString()));
             }
 
-            Assert.AreEqual(2, actual.Rows.Count);
+            Assert.AreEqual(0, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetDBConnection
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetDBConnectionTest()
+        public void SQLiteProviderGetDBConnectionTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DbConnection actual = target.GetDBConnection();
             Assert.AreEqual(true, actual.State == ConnectionState.Open);
         }
@@ -149,9 +150,9 @@ namespace Data.Common.Tests
         ///A test for GetConstraints
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetConstraintsTest()
+        public void SQLiteProviderGetConstraintsTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
             Assert.AreEqual(13, actual.Rows.Count);
         }
@@ -160,11 +161,11 @@ namespace Data.Common.Tests
         ///A test for GetDbType
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetDbTypeTest()
+        public void SQLiteProviderGetDbTypeTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
-            string providerDbType = "18";
-            DbType expected = DbType.AnsiString;
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            string providerDbType = "16";
+            DbType expected = DbType.String;
             DbType actual = target.GetDbColumnType(providerDbType);
             Assert.AreEqual(expected, actual);
         }
@@ -173,9 +174,9 @@ namespace Data.Common.Tests
         ///A test for GetPropertyType
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderGetPropertyTypeTest()
+        public void SQLiteProviderGetPropertyTypeTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
@@ -183,12 +184,12 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
-        ///A test for SqlServerProvider Constructor
+        ///A test for SQLiteProvider Constructor
         ///</summary>
         [TestMethod()]
-        public void SqlServerProviderConstructorTest()
+        public void SQLiteProviderConstructorTest()
         {
-            DbSchemaProvider target = new SqlServerSchemaProvider(connectionstring, providername);
+            DbSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
             using (DbConnection _Connection = target.GetDBConnection())
             {
                 Assert.AreEqual(true, _Connection.State == ConnectionState.Open);

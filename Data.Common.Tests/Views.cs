@@ -16,13 +16,32 @@ namespace Data.Common.Tests
     [TestClass]
     public class Views
     {
-        const string ConnectionName = "Northwind";
+        string ConnectionName;
+        string ProviderName;
+        string viewSchema;
 
         public Views()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            ConnectionName = Properties.Settings.Default.ConnectionName;
+            ProviderName = ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName;
+
+            switch (ProviderName.ToLower())
+            {
+                case "mysql.data.mysqlclient":
+                case "system.data.oracleclient":
+                    viewSchema = "northwind";
+                    break;
+
+                case "system.data.sqlserverce.3.5":
+                case "system.data.sqlserverce":
+                case "system.data.sqlite":
+                    viewSchema = null;
+                    break;
+
+                default:
+                    viewSchema = "dbo";
+                    break;
+            }
         }
 
         private TestContext testContextInstance;
@@ -72,13 +91,21 @@ namespace Data.Common.Tests
         [TestMethod]
         public void GetViewColumnsCommandBehaviorKeyInfo()
         {
-            string viewSchema = "dbo";
-            string viewName = "Alphabetical list of products";
-            DbSchema schema = new DbSchema(ConnectionName);
-
             string ProviderName = ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName;
             DbProviderFactory provider = DbProviderFactories.GetFactory(ProviderName);
             DataTable viewColumns = new DataTable();
+
+            string[] ProvidersWithNoViews = new string[] {
+                "system.data.sqlserverce.3.5",
+                "system.data.sqlserverce"
+            };
+
+            if (ProvidersWithNoViews.Contains(ProviderName.ToLower()))
+                return;
+
+            string viewName = "Alphabetical list of products";
+            DbSchema schema = new DbSchema(ConnectionName);
+
             using (DbConnection connection = provider.CreateConnection())
             {
                 connection.ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString;
@@ -90,13 +117,24 @@ namespace Data.Common.Tests
                 viewColumns = command.ExecuteReader(CommandBehavior.KeyInfo).GetSchemaTable();
                 connection.Close();
             }
-            DataRow[] realColumns = viewColumns.Select("IsHidden = 0");
+
+            DataRow[] realColumns;
+            if (viewColumns.Columns.Contains("IsHidden"))
+            {
+                realColumns = viewColumns.Select("IsHidden = 0 OR IsHidden IS NULL");
+
+                foreach (DataRow columnRow in realColumns)
+                {
+                    Console.WriteLine(columnRow["ColumnName"].ToString());
+                }
+            }
+            else
+            {
+                realColumns = viewColumns.Select();
+            }
+
             Assert.AreEqual(11, realColumns.Length);
 
-            foreach (DataRow columnRow in realColumns)
-            {
-                Console.WriteLine(columnRow["ColumnName"].ToString());
-            }
         }
 
         /// <summary>
@@ -106,13 +144,21 @@ namespace Data.Common.Tests
         [TestMethod]
         public void GetViewColumnsCommandBehaviorSchemaOnly()
         {
-            string viewSchema = "dbo";
-            string viewName = "Alphabetical list of products";
-            DbSchema schema = new DbSchema(ConnectionName);
-
             string ProviderName = ConfigurationManager.ConnectionStrings[ConnectionName].ProviderName;
             DbProviderFactory provider = DbProviderFactories.GetFactory(ProviderName);
             DataTable viewColumns = new DataTable();
+
+            string[] ProvidersWithNoViews = new string[] {
+                "system.data.sqlserverce.3.5",
+                "system.data.sqlserverce"
+            };
+
+            if (ProvidersWithNoViews.Contains(ProviderName.ToLower()))
+                return;
+
+            string viewName = "Alphabetical list of products";
+            DbSchema schema = new DbSchema(ConnectionName);
+
             using (DbConnection connection = provider.CreateConnection())
             {
                 connection.ConnectionString = ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString;
@@ -124,27 +170,38 @@ namespace Data.Common.Tests
                 viewColumns = command.ExecuteReader(CommandBehavior.SchemaOnly).GetSchemaTable();
                 connection.Close();
             }
-            Assert.AreEqual(11, viewColumns.Rows.Count);
 
             foreach (DataRow columnRow in viewColumns.Rows)
             {
                 Console.WriteLine(columnRow["ColumnName"].ToString());
             }
+
+            Assert.AreEqual(11, viewColumns.Rows.Count);
+
         }
 
         [TestMethod]
         public void GetViewColumnsBySchema()
         {
-            string viewSchema = "dbo";
+            string[] ProvidersWithNoViews = new string[] {
+                "system.data.sqlserverce.3.5",
+                "system.data.sqlserverce"
+            };
+
+            if (ProvidersWithNoViews.Contains(ProviderName.ToLower()))
+                return;
+
             string viewName = "Alphabetical list of products";
             DbSchema schema = new DbSchema(ConnectionName);
 
             DataTable viewColumns = schema.GetTableColumns(viewSchema, viewName);
-            Assert.AreEqual(11, viewColumns.Rows.Count);
+
             foreach (DataRow columnRow in viewColumns.Rows)
             {
                 Console.WriteLine(columnRow["ColumnName"].ToString());
             }
+
+            Assert.AreEqual(11, viewColumns.Rows.Count);
 
         }
     }

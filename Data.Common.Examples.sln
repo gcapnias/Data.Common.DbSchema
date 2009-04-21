@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Data.Common.vsmdi = Data.Common.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		makeT4Template.vbs = makeT4Template.vbs
-		Northwind_Schema_Data_SQLServer.sql = Northwind_Schema_Data_SQLServer.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Class", "NHibernate.Class\NHibernate.Class.csproj", "{9E768FCE-ADE4-4DE8-823E-2390D567780C}"

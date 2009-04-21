@@ -92,7 +92,7 @@ namespace Data.Common.Tests
         {
             DbSchemaProvider target = new SqlServerCeSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
-            Assert.AreEqual(16, actual.Rows.Count);
+            Assert.AreEqual(18, actual.Rows.Count);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Data.Common.Tests
         {
             DbSchemaProvider target = new SqlServerCeSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(8, actual.Rows.Count);
+            Assert.AreEqual(13, actual.Rows.Count);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Data.Common.Tests
         {
             DbSchemaProvider target = new SqlServerCeSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
-            Assert.AreEqual(7, actual.Rows.Count);
+            Assert.AreEqual(13, actual.Rows.Count);
         }
 
         /// <summary>

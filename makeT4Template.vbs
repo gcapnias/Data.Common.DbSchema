@@ -14,6 +14,7 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
     'Call filesDictionary.Add("mysql.data.mysqlclient", "Data.Common\MySqlSchemaProvider.cs")
     'Call filesDictionary.Add("system.data.oledb", "Data.Common\OleDbSchemaProvider.cs")
     'Call filesDictionary.Add("npgsql", "Data.Common\PostgreSqlSchemaProvider.cs")
+    'Call filesDictionary.Add("system.data.sqlite", "Data.Common\SQLiteSchemaProvider.cs")
   
     Set regEx = New RegExp
     regEx.MultiLine = True

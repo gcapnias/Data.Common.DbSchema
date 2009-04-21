@@ -107,12 +107,12 @@ namespace Data.Common
 
         public override DataTable GetProcedures()
         {
-            return base.GetDTSchemaProcedures();
+            return GetDTSchemaProcedures();
         }
 
         public override DataTable GetProcedureParameters(string procedureSchema, string procedureName)
         {
-            return base.GetDTSchemaProcedures();
+            return GetDTSchemaProcedures();
         }
 
         public override DbType GetDbColumnType(string providerDbType)
