@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ConnectionName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">NorthwindOracle</Value>
+      <Value Profile="(Default)">NorthwindPostgres</Value>
     </Setting>
   </Settings>
 </SettingsFile>

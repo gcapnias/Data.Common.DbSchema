@@ -15,7 +15,7 @@ namespace Data.Common.Tests
     [TestClass()]
     public class PostgreSqlSchemaProviderTest
     {
-        const string connectionname = "PostgreSQL";
+        const string connectionname = "NorthwindPostgres";
         string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
         string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
         string tableSchema = "public";
@@ -93,7 +93,7 @@ namespace Data.Common.Tests
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
-            Assert.AreEqual(15, actual.Rows.Count);
+            Assert.AreEqual(18, actual.Rows.Count);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Data.Common.Tests
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            Assert.AreEqual(11, actual.Rows.Count);
+            Assert.AreEqual(13, actual.Rows.Count);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Data.Common.Tests
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
-            Assert.AreEqual(10, actual.Rows.Count);
+            Assert.AreEqual(13, actual.Rows.Count);
         }
 
         /// <summary>
