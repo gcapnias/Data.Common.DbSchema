@@ -25,7 +25,7 @@ namespace Data.Common.Tests.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("NorthwindOracle")]
+        [global::System.Configuration.DefaultSettingValueAttribute("NorthwindPostgres")]
         public string ConnectionName {
             get {
                 return ((string)(this["ConnectionName"]));

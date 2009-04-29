@@ -1,3 +1,17 @@
+''
+''  Data.Common.DbSchema - http://dbschema.codeplex.com
+''
+''  The contents of this file are subject to the New BSD
+''  License (the "License"); you may not use this file
+''  except in compliance with the License. You may obtain a copy of
+''  the License at http://www.opensource.org/licenses/bsd-license.php
+''
+''  Software distributed under the License is distributed on an
+''  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+''  implied. See the License for the specific language governing
+''  rights and limitations under the License.
+''
+
 Dim filesDictionary, regEx, fileSystemObj, textWriter, providerName
 Dim codeFile, theCode, regionCode, searchMatches, codeMatches
 Dim codeMatch, providersDictionary, iCounter, providerMatch
@@ -15,6 +29,7 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
     'Call filesDictionary.Add("system.data.oledb", "Data.Common\OleDbSchemaProvider.cs")
     'Call filesDictionary.Add("npgsql", "Data.Common\PostgreSqlSchemaProvider.cs")
     'Call filesDictionary.Add("system.data.sqlite", "Data.Common\SQLiteSchemaProvider.cs")
+    'Call filesDictionary.Add("system.data.oracleclient", "Data.Common\OracleSchemaProvider.cs")
   
     Set regEx = New RegExp
     regEx.MultiLine = True
@@ -46,6 +61,7 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
 		
 		regEx.Pattern = ".*{([\w\W]*)}.*"
         If regEx.Test(theCode) Then
+			Call textWriter.WriteBlankLines(2)    
             Call textWriter.WriteLine(vbTab & "// " & providerName)
             Set searchMatches = regEx.Execute(theCode)
             For Each codeMatch In searchMatches
@@ -124,7 +140,6 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
     Call codeFile.WriteLine("//  implied. See the License for the specific language governing")
     Call codeFile.WriteLine("//  rights and limitations under the License.")
     Call codeFile.WriteLine("//")
-    Call codeFile.WriteBlankLines(2)    
     Call codeFile.Write(theCode)
     codeFile.Close
     Set codeFile = Nothing

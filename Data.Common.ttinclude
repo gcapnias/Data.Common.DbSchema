@@ -496,7 +496,17 @@
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable tbl = _Provider.GetProcedures();
+            DataTable tblProcedures = _Provider.GetProcedures();
+            DataTable tbl = new DataTable("Procedures");
+            if (tblProcedures.Rows.Count > 0)
+            {
+                string WhereClause = "ROUTINE_TYPE = 'PROCEDURE'";
+                tbl = tblProcedures.Clone();
+                foreach (DataRow tblRow in tblProcedures.Select(WhereClause))
+                {
+                    tbl.ImportRow(tblRow);
+                }
+            }
 
             Cache.Add(CacheKey, tbl);
             return tbl;
@@ -529,6 +539,7 @@
                     dbProvider = new SqlServerSchemaProvider(connectionString, providerName);
                     break;
 
+
                 default:
                     throw new NotImplementedException("The provider '" + providerName + "' is not implemented!");
             }
@@ -553,6 +564,8 @@
         #endregion
 
     }
+
+
 	// Data.Common.IDbSchemaProvider
 
     interface IDbSchemaProvider
@@ -567,6 +580,8 @@
         string GetPropertyType(string SystemType, bool IsNullable);
         string QualifiedTableName(string tableSchema, string tableName);
     }
+
+
 	// Data.Common.DbSchemaProvider
 
     abstract public class DbSchemaProvider : IDbSchemaProvider
@@ -845,6 +860,8 @@
         #endregion
 
     }
+
+
 	// system.data.sqlclient
 
     class SqlServerSchemaProvider : DbSchemaProvider

@@ -48,6 +48,13 @@ namespace Data.Common.Tests
                     outputProviderName = "Data.Common.SQLiteSchemaProvider";
                     break;
 
+
+                case "npgsql":
+                    tableSchema = "public";
+                    procedureSchema = "public";
+                    outputProviderName = "Data.Common.PostgreSqlSchemaProvider";
+                    break;
+
                 case "system.data.oracleclient":
                     tableSchema = "northwind";
                     procedureSchema = "northwind";
@@ -184,7 +191,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTables();
             Assert.AreEqual(13, actual.Rows.Count);
 
-            System.Console.WriteLine("Tables in database");
+            System.Console.WriteLine("Tables in database:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("View: {0}", relationRow["TABLE_NAME"].ToString()));
@@ -200,7 +207,7 @@ namespace Data.Common.Tests
             DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetViews();
 
-            System.Console.WriteLine("Views in database");
+            System.Console.WriteLine("Views in database:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("View: {0}", relationRow["TABLE_NAME"].ToString()));
@@ -229,7 +236,7 @@ namespace Data.Common.Tests
             DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetTablesAndViews();
 
-            System.Console.WriteLine("Tables & Views in database");
+            System.Console.WriteLine("Tables & Views in database:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table or View: {0}", relationRow["TABLE_NAME"].ToString()));
@@ -258,7 +265,7 @@ namespace Data.Common.Tests
             DbSchema target = new DbSchema(ConnectionName);
             DataTable actual = target.GetLogicalTables();
 
-            System.Console.WriteLine("Logical tables (w/o manytomany tables");
+            System.Console.WriteLine("Logical tables (w/o tables belonging to Many-to-Many relations):");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["TABLE_NAME"].ToString()));
@@ -277,7 +284,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetManyToManyTables();
             Assert.AreEqual(2, actual.Rows.Count);
 
-            System.Console.WriteLine("Τables that belong to many-to-many relations:");
+            System.Console.WriteLine("Τables that belong in many-to-many relations:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("ManyToMany Relation: {0}", relationRow["TABLE_NAME"].ToString()));
@@ -313,7 +320,7 @@ namespace Data.Common.Tests
             System.Console.WriteLine("All columns in table");
             foreach (DataRow relationRow in actual.Rows)
             {
-                System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
+                System.Console.WriteLine(string.Format("- Column: {0}", relationRow["ColumnName"].ToString()));
             }
         }
 
@@ -331,7 +338,7 @@ namespace Data.Common.Tests
             System.Console.WriteLine("Primary key columns in table");
             foreach (DataRow relationRow in actual.Rows)
             {
-                System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
+                System.Console.WriteLine(string.Format("- Column: {0}", relationRow["ColumnName"].ToString()));
             }
         }
 
@@ -346,10 +353,10 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTableFields(tableSchema, tableName);
             Assert.AreEqual(16, actual.Rows.Count);
 
-            System.Console.WriteLine("Columns in table that do not represent relations or primary keys");
+            System.Console.WriteLine("Columns in table that do not represent relations or primary keys:");
             foreach (DataRow relationRow in actual.Rows)
             {
-                System.Console.WriteLine(string.Format("Column: {0}", relationRow["ColumnName"].ToString()));
+                System.Console.WriteLine(string.Format("- Column: {0}", relationRow["ColumnName"].ToString()));
             }
         }
 
@@ -393,7 +400,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTableOneToManyRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
 
-            System.Console.WriteLine("One-to-Many relations in table");
+            System.Console.WriteLine("One-to-Many relations with: tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["FK_TABLE_NAME"].ToString()));
@@ -411,7 +418,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetPrimaryKeyRelations(tableSchema, tableName);
             Assert.AreEqual(3, actual.Rows.Count);
 
-            System.Console.WriteLine("Primary key relations in table");
+            System.Console.WriteLine("Primary key relations with tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["FK_TABLE_NAME"].ToString()));
@@ -429,7 +436,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTableManyToOneRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
 
-            System.Console.WriteLine("Many-to-One relations in table");
+            System.Console.WriteLine("Many-to-One relations with tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
@@ -447,7 +454,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetForeignKeyRelations(tableSchema, tableName);
             Assert.AreEqual(2, actual.Rows.Count);
 
-            System.Console.WriteLine("Foreign key relations in table");
+            System.Console.WriteLine("Foreign key relations with tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
@@ -465,7 +472,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTableManyToManyRelations(tableSchema, tableName);
             Assert.AreEqual(1, actual.Rows.Count);
 
-            System.Console.WriteLine("Many-to-many relations in table");
+            System.Console.WriteLine("Many-to-many relations with tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
@@ -483,7 +490,7 @@ namespace Data.Common.Tests
             DataTable actual = target.GetTableOneToOneRelations(tableSchema, tableName);
             Assert.AreEqual(0, actual.Rows.Count);
 
-            System.Console.WriteLine("One-to-One relations in table");
+            System.Console.WriteLine("One-to-One relations with tables:");
             foreach (DataRow relationRow in actual.Rows)
             {
                 System.Console.WriteLine(string.Format("Table: {0}", relationRow["PK_TABLE_NAME"].ToString()));
