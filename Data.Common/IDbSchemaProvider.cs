@@ -19,6 +19,7 @@ namespace Data.Common
 {
     interface IDbSchemaProvider
     {
+        string GetDatabaseName();
         DataTable GetSchemaTables();
         DataTable GetTableColumns(string tableSchema, string tableName);
         DataTable GetConstraints();

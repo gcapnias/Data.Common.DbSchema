@@ -29,6 +29,7 @@ namespace Data.Common.Tests
             {
                 case "mysql.data.mysqlclient":
                 case "system.data.oracleclient":
+                case "oracle.dataaccess.client":
                     viewSchema = "northwind";
                     break;
 

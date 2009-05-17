@@ -159,7 +159,7 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetLogicalTables()
+        public DataTable GetTablesLogical()
         {
             string CacheKey = "LogicalTables";
             if (Cache.Keys.Contains(CacheKey))
@@ -167,10 +167,10 @@ namespace Data.Common
 
             DiscoverTableRelations();
 
-            return GetLogicalTables();
+            return GetTablesLogical();
         }
 
-        public DataTable GetManyToManyTables()
+        public DataTable GetTablesManyToMany()
         {
             string CacheKey = "ManyToManyTables";
             if (Cache.Keys.Contains(CacheKey))
@@ -178,7 +178,7 @@ namespace Data.Common
 
             DiscoverTableRelations();
 
-            return GetManyToManyTables();
+            return GetTablesManyToMany();
         }
 
         private void DiscoverTableRelations()
@@ -198,7 +198,7 @@ namespace Data.Common
                 string tableName = tableRow["TABLE_NAME"].ToString();
 
                 // Discover Many-to-Many relations
-                int foreignKeyRelationsCount = GetForeignKeyRelations(tableSchema, tableName).Rows.Count;
+                int foreignKeyRelationsCount = GetTableRelationsByForeignKey(tableSchema, tableName).Rows.Count;
                 int tableColumnsCount = GetTableColumns(tableSchema, tableName).Rows.Count;
                 int primaryKeyColumnsCount = GetTablePrimaryKeyColumns(tableSchema, tableName).Rows.Count;
 
@@ -271,13 +271,13 @@ namespace Data.Common
                     filteredcolumns.Add(columnname);
             }
 
-            foreach (DataRow pkRelationRow in GetPrimaryKeyRelations(tableSchema, tableName).Rows)
+            foreach (DataRow pkRelationRow in GetTableRelationsByPrimaryKey(tableSchema, tableName).Rows)
             {
                 string columnname = "'" + pkRelationRow["PK_COLUMN_NAME"].ToString() + "'";
                 if (!filteredcolumns.Contains(columnname))
                     filteredcolumns.Add(columnname);
             }
-            foreach (DataRow fkRelationRow in GetForeignKeyRelations(tableSchema, tableName).Rows)
+            foreach (DataRow fkRelationRow in GetTableRelationsByForeignKey(tableSchema, tableName).Rows)
             {
                 string columnname = "'" + fkRelationRow["FK_COLUMN_NAME"].ToString() + "'";
                 if (!filteredcolumns.Contains(columnname))
@@ -299,7 +299,7 @@ namespace Data.Common
 
         #region ' Relations '
 
-        private DataTable GetConstraints()
+        private DataTable GetSchemaConstraints()
         {
             string CacheKey = "Constraints";
             if (Cache.Keys.Contains(CacheKey))
@@ -311,13 +311,13 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetTableOneToManyRelations(string tableSchema, string tableName)
+        public DataTable GetTableRelationsOneToMany(string tableSchema, string tableName)
         {
             string CacheKey = "OneToManyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable otmRelations = GetPrimaryKeyRelations(tableSchema, tableName);
+            DataTable otmRelations = GetTableRelationsByPrimaryKey(tableSchema, tableName);
             DataTable tbl = otmRelations.Clone();
             foreach (DataRow relationRow in otmRelations.Rows)
             {
@@ -348,37 +348,13 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetPrimaryKeyRelations(string tableSchema, string tableName)
-        {
-            string CacheKey = "PrimaryKeyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
-            if (Cache.Keys.Contains(CacheKey))
-                return Cache[CacheKey];
-
-            string WhereClause;
-            if (!string.IsNullOrEmpty(tableSchema))
-                WhereClause = string.Format("PK_TABLE_SCHEMA = '{0}' AND PK_TABLE_NAME = '{1}'", tableSchema, tableName);
-            else
-                WhereClause = string.Format("PK_TABLE_NAME = '{0}'", tableName);
-
-            DataTable relations = GetConstraints();
-            DataRow[] pkRelations = (DataRow[])relations.Select(WhereClause);
-            DataTable tbl = relations.Clone();
-            foreach (DataRow relationRow in pkRelations)
-            {
-                tbl.ImportRow(relationRow);
-            }
-
-            Cache.Add(CacheKey, tbl);
-            return tbl;
-        }
-
-        public DataTable GetTableManyToOneRelations(string tableSchema, string tableName)
+        public DataTable GetTableRelationsManyToOne(string tableSchema, string tableName)
         {
             string CacheKey = "ManyToOneRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable mtoRelations = GetForeignKeyRelations(tableSchema, tableName);
+            DataTable mtoRelations = GetTableRelationsByForeignKey(tableSchema, tableName);
             DataTable tbl = mtoRelations.Clone();
             foreach (DataRow relationRow in mtoRelations.Rows)
             {
@@ -396,37 +372,13 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetForeignKeyRelations(string tableSchema, string tableName)
-        {
-            string CacheKey = "ForeignKeyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
-            if (Cache.Keys.Contains(CacheKey))
-                return Cache[CacheKey];
-
-            string WhereClause;
-            if (!string.IsNullOrEmpty(tableSchema))
-                WhereClause = string.Format("FK_TABLE_SCHEMA = '{0}' AND FK_TABLE_NAME = '{1}'", tableSchema, tableName);
-            else
-                WhereClause = string.Format("FK_TABLE_NAME = '{0}'", tableName);
-
-            DataTable relations = GetConstraints();
-            DataRow[] fkRelations = (DataRow[])relations.Select(WhereClause);
-            DataTable tbl = relations.Clone();
-            foreach (DataRow relationRow in fkRelations)
-            {
-                tbl.ImportRow(relationRow);
-            }
-
-            Cache.Add(CacheKey, tbl);
-            return tbl;
-        }
-
-        public DataTable GetTableManyToManyRelations(string tableSchema, string tableName)
+        public DataTable GetTableRelationsManyToMany(string tableSchema, string tableName)
         {
             string CacheKey = "ManyToManyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable mtmRelations = GetPrimaryKeyRelations(tableSchema, tableName);
+            DataTable mtmRelations = GetTableRelationsByPrimaryKey(tableSchema, tableName);
             DataTable tbl = mtmRelations.Clone();
             foreach (DataRow relationRow in mtmRelations.Rows)
             {
@@ -445,13 +397,13 @@ namespace Data.Common
             return tbl;
         }
 
-        public DataTable GetTableOneToOneRelations(string tableSchema, string tableName)
+        public DataTable GetTableRelationsOneToOne(string tableSchema, string tableName)
         {
             string CacheKey = "OneToOneRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
             if (Cache.Keys.Contains(CacheKey))
                 return Cache[CacheKey];
 
-            DataTable pkRelations = GetPrimaryKeyRelations(tableSchema, tableName);
+            DataTable pkRelations = GetTableRelationsByPrimaryKey(tableSchema, tableName);
             DataTable tbl = pkRelations.Clone();
             foreach (DataRow relationRow in pkRelations.Rows)
             {
@@ -482,6 +434,54 @@ namespace Data.Common
             return tbl;
         }
 
+        public DataTable GetTableRelationsByPrimaryKey(string tableSchema, string tableName)
+        {
+            string CacheKey = "PrimaryKeyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            string WhereClause;
+            if (!string.IsNullOrEmpty(tableSchema))
+                WhereClause = string.Format("PK_TABLE_SCHEMA = '{0}' AND PK_TABLE_NAME = '{1}'", tableSchema, tableName);
+            else
+                WhereClause = string.Format("PK_TABLE_NAME = '{0}'", tableName);
+
+            DataTable relations = GetSchemaConstraints();
+            DataRow[] pkRelations = (DataRow[])relations.Select(WhereClause);
+            DataTable tbl = relations.Clone();
+            foreach (DataRow relationRow in pkRelations)
+            {
+                tbl.ImportRow(relationRow);
+            }
+
+            Cache.Add(CacheKey, tbl);
+            return tbl;
+        }
+
+        public DataTable GetTableRelationsByForeignKey(string tableSchema, string tableName)
+        {
+            string CacheKey = "ForeignKeyRelations:" + _Provider.QualifiedTableName(tableSchema, tableName);
+            if (Cache.Keys.Contains(CacheKey))
+                return Cache[CacheKey];
+
+            string WhereClause;
+            if (!string.IsNullOrEmpty(tableSchema))
+                WhereClause = string.Format("FK_TABLE_SCHEMA = '{0}' AND FK_TABLE_NAME = '{1}'", tableSchema, tableName);
+            else
+                WhereClause = string.Format("FK_TABLE_NAME = '{0}'", tableName);
+
+            DataTable relations = GetSchemaConstraints();
+            DataRow[] fkRelations = (DataRow[])relations.Select(WhereClause);
+            DataTable tbl = relations.Clone();
+            foreach (DataRow relationRow in fkRelations)
+            {
+                tbl.ImportRow(relationRow);
+            }
+
+            Cache.Add(CacheKey, tbl);
+            return tbl;
+        }
+
         #endregion
 
         #region ' Store Procedures '
@@ -494,10 +494,10 @@ namespace Data.Common
 
             DataTable tblProcedures = _Provider.GetProcedures();
             DataTable tbl = new DataTable("Procedures");
+            tbl = tblProcedures.Clone();
             if (tblProcedures.Rows.Count > 0)
             {
                 string WhereClause = "ROUTINE_TYPE = 'PROCEDURE'";
-                tbl = tblProcedures.Clone();
                 foreach (DataRow tblRow in tblProcedures.Select(WhereClause))
                 {
                     tbl.ImportRow(tblRow);
@@ -557,6 +557,7 @@ namespace Data.Common
                     break;
 
                 case "system.data.oracleclient":
+                case "oracle.dataaccess.client":
                     dbProvider = new OracleSchemaProvider(connectionString, providerName);
                     break;
 
@@ -585,6 +586,11 @@ namespace Data.Common
         public string QualifiedTableName(string tableSchema, string tableName)
         {
             return _Provider.QualifiedTableName(tableSchema, tableName);
+        }
+
+        public string GetDatabaseName()
+        {
+            return _Provider.GetDatabaseName();
         }
 
         #endregion

@@ -18,9 +18,6 @@ using System.Data.Common;
 using System.Reflection;
 using System;
 
-// ToDo:
-// 1. 
-
 namespace Data.Common
 {
     abstract public class DbSchemaProvider : IDbSchemaProvider
@@ -40,6 +37,16 @@ namespace Data.Common
         }
 
         #region ' IDbProvider Members '
+
+        virtual public string GetDatabaseName()
+        {
+            string DatabaseName = string.Empty;
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                DatabaseName = _Connection.Database;
+            }
+            return DatabaseName;
+        }
 
         virtual public DataTable GetSchemaTables()
         {

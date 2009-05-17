@@ -157,7 +157,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void MySqlProviderGetDbTypeTest()
         {
-            DbSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
+            MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             string providerDbType = "18";
             DbType expected = DbType.AnsiString;
             DbType actual = target.GetDbColumnType(providerDbType);
@@ -170,10 +170,22 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void MySqlProviderGetPropertyTypeTest()
         {
-            DbSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
+            MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for GetDatabaseName
+        ///</summary>
+        [TestMethod()]
+        public void MySqlProviderGetDatabaseName()
+        {
+            MySqlSchemaProvider target = new MySqlSchemaProvider(connectionstring, providername);
+            string expected = "northwind";
+            string actual = target.GetDatabaseName();
             Assert.AreEqual(expected, actual);
         }
 

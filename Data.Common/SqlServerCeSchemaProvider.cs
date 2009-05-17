@@ -16,6 +16,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 
 namespace Data.Common
 {
@@ -24,6 +25,21 @@ namespace Data.Common
         public SqlServerCeSchemaProvider(string connectionstring, string providername) : base(connectionstring, providername) { }
 
         #region ' IDbProvider Members '
+
+        public override string GetDatabaseName()
+        {
+            string DatabaseName = string.Empty;
+            using (DbConnection _Connection = GetDBConnection())
+            {
+                Regex RegExp = new Regex(@"\\(?<db>[^\\]*)?\.sdf$", RegexOptions.IgnoreCase);
+                if (RegExp.IsMatch(_Connection.Database))
+                {
+                    Match found = RegExp.Matches(_Connection.Database)[0];
+                    DatabaseName = found.Groups[1].Value;
+                }
+            }
+            return DatabaseName;
+        }
 
         public override DataTable GetSchemaTables()
         {
@@ -112,7 +128,7 @@ namespace Data.Common
 
         public override DataTable GetProcedureParameters(string procedureSchema, string procedureName)
         {
-            return GetDTSchemaProcedures();
+            return GetDTSchemaProcedureParameters();
         }
 
         public override DbType GetDbColumnType(string providerDbType)
