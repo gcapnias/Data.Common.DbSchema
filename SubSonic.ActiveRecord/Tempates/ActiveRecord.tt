@@ -50,7 +50,7 @@ namespace <#=Namespace #>
 <#
     foreach(DataRow row in tables.Rows)
     {
-        string tableName = row["TABLE_NAME"].ToString();
+		string tableName = row["TABLE_NAME"].ToString();
         string className = Inflector.MakeSingular(CleanName(tableName));
         string tableSchema = row["TABLE_SCHEMA"].ToString();
         DataTable tableColumns = schema.GetTableColumns(tableSchema, tableName);
@@ -86,7 +86,7 @@ namespace <#=Namespace #>
                             case SubSonic.Comparison.Equals:
                                 if (!val.Equals(w.ParameterValue))
                                 {
-                                    remove = true;
+                               		remove = true;
                                 }
                                 break;
                         }

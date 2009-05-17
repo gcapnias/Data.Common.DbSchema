@@ -48,7 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbSchemaTest.cs" />
+    <Compile Include="DbSchemaReturnSchemaTest.cs" />
     <Compile Include="ManyToMany.cs" />
+    <Compile Include="SchemaProviders\OleDbSchemaProviderTest.cs" />
     <Compile Include="SchemaProviders\OracleSchemaProviderTest.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

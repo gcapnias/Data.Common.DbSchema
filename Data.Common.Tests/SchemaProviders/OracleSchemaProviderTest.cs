@@ -14,7 +14,8 @@ namespace Data.Common.Tests
     [TestClass()]
     public class OracleSchemaProviderTest
     {
-        const string connectionname = "NorthwindOracle";
+        //const string connectionname = "NorthwindOracle";
+        const string connectionname = "NorthwindOracleClient";
         string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
         string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
         string tableSchema = "northwind";
@@ -77,7 +78,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderQualifiedTableNameTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             string expected = "northwind.Employees";
             string actual = target.QualifiedTableName(tableSchema, tableName);
             Assert.AreEqual(expected, actual);
@@ -89,7 +90,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetTableColumnsTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
 
             foreach (DataRow columnRow in actual.Rows)
@@ -106,7 +107,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetSchemaTablesTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
 
             string message = string.Format("Expected <29> or more. Actual <{0}>.", actual.Rows.Count);
@@ -119,7 +120,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetProceduresTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
             Assert.AreEqual(7, actual.Rows.Count);
         }
@@ -130,7 +131,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetProcedureParametersTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
 
             System.Console.WriteLine("Parmeters in Procedure");
@@ -148,7 +149,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetDBConnectionTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DbConnection actual = target.GetDBConnection();
             Assert.AreEqual(true, actual.State == ConnectionState.Open);
         }
@@ -159,7 +160,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetConstraintsTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
             Assert.AreEqual(13, actual.Rows.Count);
         }
@@ -170,7 +171,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetDbTypeTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             string providerDbType = "4";
             DbType expected = DbType.AnsiString;
             DbType actual = target.GetDbColumnType(providerDbType);
@@ -183,10 +184,22 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderGetPropertyTypeTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for GetDatabaseName
+        ///</summary>
+        [TestMethod()]
+        public void OracleProviderGetDatabaseName()
+        {
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            string expected = string.Empty;
+            string actual = target.GetDatabaseName();
             Assert.AreEqual(expected, actual);
         }
 
@@ -196,7 +209,7 @@ namespace Data.Common.Tests
         [TestMethod()]
         public void OracleProviderConstructorTest()
         {
-            DbSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
+            OracleSchemaProvider target = new OracleSchemaProvider(connectionstring, providername);
             using (DbConnection _Connection = target.GetDBConnection())
             {
                 Assert.AreEqual(true, _Connection.State == ConnectionState.Open);

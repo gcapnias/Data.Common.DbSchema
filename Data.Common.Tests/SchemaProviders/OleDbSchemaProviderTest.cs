@@ -1,25 +1,26 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Configuration;
+﻿using Data.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
-using System.Data.Common;
-
-using Data.Common;
+using System.Data.OleDb;
+using System.Configuration;
 
 namespace Data.Common.Tests
 {
+    
+    
     /// <summary>
-    ///This is a test class for SQLiteProviderTest and is intended
-    ///to contain all SQLiteProviderTest Unit Tests
+    ///This is a test class for OleDbSchemaProviderTest and is intended
+    ///to contain all OleDbSchemaProviderTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SQLiteSchemaProviderTest
+    public class OleDbSchemaProviderTest
     {
-        const string connectionname = "NorthwindSQLite";
+        const string connectionname = "NorthwindOleDbAccess";
         string connectionstring = ConfigurationManager.ConnectionStrings[connectionname].ConnectionString;
         string providername = ConfigurationManager.ConnectionStrings[connectionname].ProviderName;
-        string tableSchema = null;
+        string tableSchema = string.Empty;
         string tableName = "Employees";
-        string procedureSchema = null;
+        string procedureSchema = "dbo";
         string procedureName = "SalesByCategory";
 
         private TestContext testContextInstance;
@@ -75,10 +76,10 @@ namespace Data.Common.Tests
         ///A test for QualifiedTableName
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderQualifiedTableNameTest()
+        public void OleDbProviderQualifiedTableNameTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
-            string expected = "[Employees]";
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+            string expected = "[dbo].[Employees]";
             string actual = target.QualifiedTableName(tableSchema, tableName);
             Assert.AreEqual(expected, actual);
         }
@@ -87,10 +88,22 @@ namespace Data.Common.Tests
         ///A test for GetTableColumns
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetTableColumnsTest()
+        public void OleDbProviderGetTableColumnsTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+
+            using (OleDbConnection _Connection = (OleDbConnection) target.GetDBConnection())
+            {
+                DataTable tbl = _Connection.GetSchema("DataTypes");
+            }
+
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
+
+            foreach (DataRow columnRow in actual.Rows)
+            {
+                System.Console.Out.WriteLine("Column: " + columnRow["ColumnName"].ToString() + " - Datatype: " + columnRow["ProviderType"].ToString());
+            }
+
             Assert.AreEqual(18, actual.Rows.Count);
         }
 
@@ -98,32 +111,31 @@ namespace Data.Common.Tests
         ///A test for GetSchemaTables
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetSchemaTablesTest()
+        public void OleDbProviderGetSchemaTablesTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
-            string message = string.Format("Expected <29> or more. Actual <{0}>.", actual.Rows.Count);
-            Assert.IsTrue(actual.Rows.Count >= 29, message);
+            Assert.AreEqual(29, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetProcedures
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetProceduresTest()
+        public void OleDbProviderGetProceduresTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
-            Assert.AreEqual(0, actual.Rows.Count);
+            Assert.AreEqual(7, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetProcedureParameters
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetProcedureParametersTest()
+        public void OleDbProviderGetProcedureParametersTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
 
             System.Console.WriteLine("Parmeters in Procedure");
@@ -132,17 +144,17 @@ namespace Data.Common.Tests
                 System.Console.WriteLine(string.Format("Parameter: {0}", relationRow["PARAMETER_NAME"].ToString()));
             }
 
-            Assert.AreEqual(0, actual.Rows.Count);
+            Assert.AreEqual(2, actual.Rows.Count);
         }
 
         /// <summary>
         ///A test for GetDBConnection
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetDBConnectionTest()
+        public void OleDbProviderGetDBConnectionTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
-            DbConnection actual = target.GetDBConnection();
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+            OleDbConnection actual = (OleDbConnection)target.GetDBConnection();
             Assert.AreEqual(true, actual.State == ConnectionState.Open);
         }
 
@@ -150,9 +162,9 @@ namespace Data.Common.Tests
         ///A test for GetConstraints
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetConstraintsTest()
+        public void OleDbProviderGetConstraintsTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
             Assert.AreEqual(13, actual.Rows.Count);
         }
@@ -161,11 +173,11 @@ namespace Data.Common.Tests
         ///A test for GetDbType
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetDbTypeTest()
+        public void OleDbProviderGetDbTypeTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
-            string providerDbType = "16";
-            DbType expected = DbType.String;
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+            string providerDbType = "18";
+            DbType expected = DbType.AnsiString;
             DbType actual = target.GetDbColumnType(providerDbType);
             Assert.AreEqual(expected, actual);
         }
@@ -174,9 +186,9 @@ namespace Data.Common.Tests
         ///A test for GetPropertyType
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetPropertyTypeTest()
+        public void OleDbProviderGetPropertyTypeTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
@@ -187,22 +199,22 @@ namespace Data.Common.Tests
         ///A test for GetDatabaseName
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderGetDatabaseName()
+        public void OleDbProviderGetDatabaseName()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
-            string expected = "main";
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+            string expected = "Northwind";
             string actual = target.GetDatabaseName();
             Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
-        ///A test for SQLiteProvider Constructor
+        ///A test for OleDbProvider Constructor
         ///</summary>
         [TestMethod()]
-        public void SQLiteProviderConstructorTest()
+        public void OleDbProviderConstructorTest()
         {
-            SQLiteSchemaProvider target = new SQLiteSchemaProvider(connectionstring, providername);
-            using (DbConnection _Connection = target.GetDBConnection())
+            OleDbSchemaProvider target = new OleDbSchemaProvider(connectionstring, providername);
+            using (OleDbConnection _Connection = (OleDbConnection)target.GetDBConnection())
             {
                 Assert.AreEqual(true, _Connection.State == ConnectionState.Open);
                 Assert.AreEqual(connectionstring, _Connection.ConnectionString);

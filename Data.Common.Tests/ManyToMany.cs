@@ -26,6 +26,7 @@ namespace Data.Common.Tests
             {
                 case "mysql.data.mysqlclient":
                 case "system.data.oracleclient":
+                case "oracle.dataaccess.client":
                     tableSchema = "northwind";
                     break;
 
@@ -109,13 +110,13 @@ namespace Data.Common.Tests
             string foundTableName = null;
 
             DbSchema schema = new DbSchema(ConnectionName);
-            DataTable TableManyToManyRelations = schema.GetTableManyToManyRelations(tableSchema, tableName);
+            DataTable TableManyToManyRelations = schema.GetTableRelationsManyToMany(tableSchema, tableName);
 
             foreach (DataRow relationRow in TableManyToManyRelations.Rows)
             {
                 string fkTableSchema = CleanNullOrEmpty(relationRow["FK_TABLE_SCHEMA"]);
                 string fkTableName = relationRow["FK_TABLE_NAME"].ToString();
-                DataTable OtherManyToManyRelations = schema.GetTableManyToOneRelations(fkTableSchema, fkTableName);
+                DataTable OtherManyToManyRelations = schema.GetTableRelationsManyToOne(fkTableSchema, fkTableName);
                 foreach (DataRow manytomanyRow in OtherManyToManyRelations.Rows)
                 {
                     string otherTableSchema = CleanNullOrEmpty(manytomanyRow["PK_TABLE_SCHEMA"]);
@@ -138,19 +139,19 @@ namespace Data.Common.Tests
             string tableName = "Territories";
             DbSchema schema = new DbSchema(ConnectionName);
 
-            DataTable onetomanyRelations = schema.GetTableOneToManyRelations(tableSchema, tableName);
+            DataTable onetomanyRelations = schema.GetTableRelationsOneToMany(tableSchema, tableName);
             foreach (DataRow relationRow in onetomanyRelations.Rows)
             {
                 System.Console.WriteLine("(OTM)Table: " + relationRow["FK_TABLE_NAME"].ToString());
             }
 
-            DataTable manytooneRelations = schema.GetTableManyToOneRelations(tableSchema, tableName);
+            DataTable manytooneRelations = schema.GetTableRelationsManyToOne(tableSchema, tableName);
             foreach (DataRow relationRow in manytooneRelations.Rows)
             {
                 System.Console.WriteLine("(MTO)Table: " + relationRow["PK_TABLE_NAME"].ToString());
             }
 
-            DataTable manytomanyRelations = schema.GetTableManyToManyRelations(tableSchema, tableName);
+            DataTable manytomanyRelations = schema.GetTableRelationsManyToMany(tableSchema, tableName);
             foreach (DataRow relationRow in manytomanyRelations.Rows)
             {
                 System.Console.WriteLine("(MTM)Table: " + relationRow["FK_TABLE_NAME"].ToString());

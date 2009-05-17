@@ -77,7 +77,7 @@ namespace Data.Common.Tests
         ///A test for QualifiedTableName
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaQualifiedTableNameTest()
+        public void PostgreSqlProviderQualifiedTableNameTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             string expected = "public.Employees";
@@ -89,7 +89,7 @@ namespace Data.Common.Tests
         ///A test for GetTableColumns
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetTableColumnsTest()
+        public void PostgreSqlProviderGetTableColumnsTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetTableColumns(tableSchema, tableName);
@@ -100,7 +100,7 @@ namespace Data.Common.Tests
         ///A test for GetSchemaTables
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetSchemaTablesTest()
+        public void PostgreSqlProviderGetSchemaTablesTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetSchemaTables();
@@ -111,7 +111,7 @@ namespace Data.Common.Tests
         ///A test for GetProcedures
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetProceduresTest()
+        public void PostgreSqlProviderGetProceduresTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedures();
@@ -122,7 +122,7 @@ namespace Data.Common.Tests
         ///A test for GetProcedureParameters
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetProcedureParametersTest()
+        public void PostgreSqlProviderGetProcedureParametersTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetProcedureParameters(procedureSchema, procedureName);
@@ -133,7 +133,7 @@ namespace Data.Common.Tests
         ///A test for GetDBConnection
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetDBConnectionTest()
+        public void PostgreSqlProviderGetDBConnectionTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DbConnection actual = target.GetDBConnection();
@@ -144,7 +144,7 @@ namespace Data.Common.Tests
         ///A test for GetConstraints
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetConstraintsTest()
+        public void PostgreSqlProviderGetConstraintsTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             DataTable actual = target.GetConstraints();
@@ -155,9 +155,9 @@ namespace Data.Common.Tests
         ///A test for GetDbType
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetDbTypeTest()
+        public void PostgreSqlProviderGetDbTypeTest()
         {
-            DbSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             string providerDbType = "18";
             DbType expected = DbType.Int16;
             DbType actual = target.GetDbColumnType(providerDbType);
@@ -168,9 +168,9 @@ namespace Data.Common.Tests
         ///A test for GetPropertyType
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaGetPropertyTypeTest()
+        public void PostgreSqlProviderGetPropertyTypeTest()
         {
-            DbSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             string SystemType = "System.String";
             string expected = "string";
             string actual = target.GetPropertyType(SystemType);
@@ -178,10 +178,22 @@ namespace Data.Common.Tests
         }
 
         /// <summary>
-        ///A test for PostgreSqlSchema Constructor
+        ///A test for GetDatabaseName
         ///</summary>
         [TestMethod()]
-        public void PostgreSqlSchemaConstructorTest()
+        public void PostgreSqlProviderGetDatabaseName()
+        {
+            PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
+            string expected = "Northwind";
+            string actual = target.GetDatabaseName();
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for PostgreSqlProvider Constructor
+        ///</summary>
+        [TestMethod()]
+        public void PostgreSqlProviderConstructorTest()
         {
             PostgreSqlSchemaProvider target = new PostgreSqlSchemaProvider(connectionstring, providername);
             using (DbConnection _Connection = target.GetDBConnection())

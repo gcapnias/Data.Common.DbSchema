@@ -24,6 +24,7 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
     Call filesDictionary.Add("Data.Common.IDbSchemaProvider", "Data.Common\IDbSchemaProvider.cs")
     Call filesDictionary.Add("Data.Common.DbSchemaProvider", "Data.Common\DbSchemaProvider.cs")
     Call filesDictionary.Add("system.data.sqlclient", "Data.Common\SqlServerSchemaProvider.cs")
+    'Call filesDictionary.Add("system.data.oledb", "Data.Common\OleDbSchemaProviderTest.cs")
     'Call filesDictionary.Add("system.data.sqlserverce.3.5", "Data.Common\SqlServerCeSchemaProvider.cs")
     'Call filesDictionary.Add("mysql.data.mysqlclient", "Data.Common\MySqlSchemaProvider.cs")
     'Call filesDictionary.Add("system.data.oledb", "Data.Common\OleDbSchemaProvider.cs")
