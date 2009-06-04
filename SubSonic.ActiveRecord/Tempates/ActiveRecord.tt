@@ -1,4 +1,4 @@
-﻿<#@ template language="C#v3.5" debug="True" hostspecific="True" #>
+<#@ template language="C#v3.5" debug="True" hostspecific="True" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="SubSonic.dll" #>
 <#@ import namespace="System.Configuration" #>

@@ -162,5 +162,6 @@ namespace Data.Common.Tests
             Assert.AreEqual(1, manytomanyRelations.Rows.Count);
 
         }
+
     }
 }

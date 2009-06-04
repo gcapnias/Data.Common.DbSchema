@@ -25,7 +25,7 @@ namespace Data.Common.Tests.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("NorthwindOracleClient")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Northwind")]
         public string ConnectionName {
             get {
                 return ((string)(this["ConnectionName"]));
