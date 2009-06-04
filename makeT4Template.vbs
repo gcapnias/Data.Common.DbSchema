@@ -20,6 +20,9 @@ Dim providersToRemove, providers, arrayKeys, importednamespaces, namespace
     Const outputFile = "Data.Common.ttinclude"
 
     Set filesDictionary = CreateObject("Scripting.Dictionary")
+    Call filesDictionary.Add("Data.Common.DbTable", "Data.Common\DbTable.cs")
+    Call filesDictionary.Add("Data.Common.DbColumn", "Data.Common\DbColumn.cs")
+    Call filesDictionary.Add("Data.Common.DbRelation", "Data.Common\DbRelation.cs")
     Call filesDictionary.Add("Data.Common.DbSchema", "Data.Common\DbSchema.cs")
     Call filesDictionary.Add("Data.Common.IDbSchemaProvider", "Data.Common\IDbSchemaProvider.cs")
     Call filesDictionary.Add("Data.Common.DbSchemaProvider", "Data.Common\DbSchemaProvider.cs")

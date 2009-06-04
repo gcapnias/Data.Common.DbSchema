@@ -46,8 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbRelation.cs" />
     <Compile Include="DbSchemaProvider.cs" />
     <Compile Include="DbSchema.cs" />
+    <Compile Include="DbColumn.cs" />
+    <Compile Include="DbTable.cs" />
     <Compile Include="IDbSchemaProvider.cs" />
     <Compile Include="MySqlSchemaProvider.cs" />
     <Compile Include="OleDbSchemaProvider.cs" />

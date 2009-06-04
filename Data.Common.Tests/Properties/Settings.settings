@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ConnectionName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">NorthwindOracleClient</Value>
+      <Value Profile="(Default)">Northwind</Value>
     </Setting>
   </Settings>
 </SettingsFile>

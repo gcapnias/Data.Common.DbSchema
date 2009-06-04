@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using Data.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace Data.Common.Tests
 {
@@ -130,6 +131,13 @@ namespace Data.Common.Tests
                 System.Console.WriteLine("Column: {0} ({1})", column.ColumnName, column.DataType.ToString());
             }
 
+            List<DbTable> tables = new List<DbTable>();
+            foreach (DataRow Table in actual.Rows)
+            {
+                tables.Add(new DbTable(Table));
+            }
+            Assert.IsTrue(tables.Count >= 19, string.Format("Actual <{0}>.", tables.Count));
+
             string[] requiredColumns = new string[] { 
                 "TABLE_CATALOG","TABLE_SCHEMA","TABLE_NAME","TABLE_TYPE"
             };
@@ -161,6 +169,13 @@ namespace Data.Common.Tests
             {
                 System.Console.WriteLine("Column: {0} ({1})", column.ColumnName, column.DataType.ToString());
             }
+
+            List<DbColumn> columns = new List<DbColumn>();
+            foreach (DataRow Column in actual.Rows)
+            {
+                columns.Add(new DbColumn(Column));
+            }
+            Assert.AreEqual(18, columns.Count);
 
             string[] requiredColumns = new string[] { 
                 "AllowDBNull","BaseColumnName","BaseSchemaName","BaseTableName","ColumnName","ColumnOrdinal",
@@ -220,6 +235,12 @@ namespace Data.Common.Tests
                 System.Console.WriteLine("Column: {0} ({1})", column.ColumnName, column.DataType.ToString());
             }
 
+            List<DbRelation> relations = new List<DbRelation>();
+            foreach (DataRow Relation in actual.Rows)
+            {
+                relations.Add(new DbRelation(Relation));
+            }
+            Assert.AreEqual(13, relations.Count);
 
             string[] requiredColumns = new string[] { 
                 "PK_TABLE_CATALOG","PK_TABLE_SCHEMA","PK_TABLE_NAME","PK_COLUMN_NAME",
