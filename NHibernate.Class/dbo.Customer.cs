@@ -20,20 +20,6 @@ namespace Northwind
             set{ _CustomerID = value; }
         }
 
-        private string _Address;
-        public virtual string Address
-        {
-            get{ return _Address; }
-            set{ _Address = value; }
-        }
-
-        private string _City;
-        public virtual string City
-        {
-            get{ return _City; }
-            set{ _City = value; }
-        }
-
         private string _CompanyName;
         public virtual string CompanyName
         {
@@ -55,25 +41,25 @@ namespace Northwind
             set{ _ContactTitle = value; }
         }
 
-        private string _Country;
-        public virtual string Country
+        private string _Address;
+        public virtual string Address
         {
-            get{ return _Country; }
-            set{ _Country = value; }
+            get{ return _Address; }
+            set{ _Address = value; }
         }
 
-        private string _Fax;
-        public virtual string Fax
+        private string _City;
+        public virtual string City
         {
-            get{ return _Fax; }
-            set{ _Fax = value; }
+            get{ return _City; }
+            set{ _City = value; }
         }
 
-        private string _Phone;
-        public virtual string Phone
+        private string _Region;
+        public virtual string Region
         {
-            get{ return _Phone; }
-            set{ _Phone = value; }
+            get{ return _Region; }
+            set{ _Region = value; }
         }
 
         private string _PostalCode;
@@ -83,11 +69,25 @@ namespace Northwind
             set{ _PostalCode = value; }
         }
 
-        private string _Region;
-        public virtual string Region
+        private string _Country;
+        public virtual string Country
         {
-            get{ return _Region; }
-            set{ _Region = value; }
+            get{ return _Country; }
+            set{ _Country = value; }
+        }
+
+        private string _Phone;
+        public virtual string Phone
+        {
+            get{ return _Phone; }
+            set{ _Phone = value; }
+        }
+
+        private string _Fax;
+        public virtual string Fax
+        {
+            get{ return _Fax; }
+            set{ _Fax = value; }
         }
 
         // One-To-Many Relation

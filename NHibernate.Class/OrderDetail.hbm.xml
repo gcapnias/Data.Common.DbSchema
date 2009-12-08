@@ -5,14 +5,14 @@
             <key-property name="OrderID" type="Int32" column="OrderID" />
             <key-property name="ProductID" type="Int32" column="ProductID" />
         </composite-id>
-        <property name="Discount" type="System.Single">
-            <column name="Discount" not-null="true" />
+        <property name="UnitPrice" type="Decimal">
+            <column name="UnitPrice" not-null="true" />
         </property>
         <property name="Quantity" type="Int16">
             <column name="Quantity" not-null="true" />
         </property>
-        <property name="UnitPrice" type="Decimal">
-            <column name="UnitPrice" not-null="true" />
+        <property name="Discount" type="System.Single">
+            <column name="Discount" not-null="true" />
         </property>
         <many-to-one name="Order" column="OrderID" class="Order" not-null="true" />
         <many-to-one name="Product" column="ProductID" class="Product" not-null="true" />

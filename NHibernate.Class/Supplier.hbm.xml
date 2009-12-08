@@ -5,12 +5,6 @@
             <column name="SupplierID" not-null="false" unique="true" />
             <generator class="native" />
         </id>
-        <property name="Address" type="String">
-            <column name="Address" length="60" not-null="false" />
-        </property>
-        <property name="City" type="String">
-            <column name="City" length="15" not-null="false" />
-        </property>
         <property name="CompanyName" type="String">
             <column name="CompanyName" length="40" not-null="true" />
         </property>
@@ -20,23 +14,29 @@
         <property name="ContactTitle" type="String">
             <column name="ContactTitle" length="30" not-null="false" />
         </property>
+        <property name="Address" type="String">
+            <column name="Address" length="60" not-null="false" />
+        </property>
+        <property name="City" type="String">
+            <column name="City" length="15" not-null="false" />
+        </property>
+        <property name="Region" type="String">
+            <column name="Region" length="15" not-null="false" />
+        </property>
+        <property name="PostalCode" type="String">
+            <column name="PostalCode" length="10" not-null="false" />
+        </property>
         <property name="Country" type="String">
             <column name="Country" length="15" not-null="false" />
+        </property>
+        <property name="Phone" type="String">
+            <column name="Phone" length="24" not-null="false" />
         </property>
         <property name="Fax" type="String">
             <column name="Fax" length="24" not-null="false" />
         </property>
         <property name="HomePage" type="String">
             <column name="HomePage" length="1073741823" not-null="false" />
-        </property>
-        <property name="Phone" type="String">
-            <column name="Phone" length="24" not-null="false" />
-        </property>
-        <property name="PostalCode" type="String">
-            <column name="PostalCode" length="10" not-null="false" />
-        </property>
-        <property name="Region" type="String">
-            <column name="Region" length="15" not-null="false" />
         </property>
         <bag name="Products" lazy="true" inverse="true" cascade="all-delete-orphan">
             <key column="SupplierID" />

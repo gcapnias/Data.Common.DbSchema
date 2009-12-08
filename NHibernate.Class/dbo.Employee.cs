@@ -20,62 +20,6 @@ namespace Northwind
             set{ _EmployeeID = value; }
         }
 
-        private string _Address;
-        public virtual string Address
-        {
-            get{ return _Address; }
-            set{ _Address = value; }
-        }
-
-        private DateTime? _BirthDate;
-        public virtual DateTime? BirthDate
-        {
-            get{ return _BirthDate; }
-            set{ _BirthDate = value; }
-        }
-
-        private string _City;
-        public virtual string City
-        {
-            get{ return _City; }
-            set{ _City = value; }
-        }
-
-        private string _Country;
-        public virtual string Country
-        {
-            get{ return _Country; }
-            set{ _Country = value; }
-        }
-
-        private string _Extension;
-        public virtual string Extension
-        {
-            get{ return _Extension; }
-            set{ _Extension = value; }
-        }
-
-        private string _FirstName;
-        public virtual string FirstName
-        {
-            get{ return _FirstName; }
-            set{ _FirstName = value; }
-        }
-
-        private DateTime? _HireDate;
-        public virtual DateTime? HireDate
-        {
-            get{ return _HireDate; }
-            set{ _HireDate = value; }
-        }
-
-        private string _HomePhone;
-        public virtual string HomePhone
-        {
-            get{ return _HomePhone; }
-            set{ _HomePhone = value; }
-        }
-
         private string _LastName;
         public virtual string LastName
         {
@@ -83,39 +27,11 @@ namespace Northwind
             set{ _LastName = value; }
         }
 
-        private string _Notes;
-        public virtual string Notes
+        private string _FirstName;
+        public virtual string FirstName
         {
-            get{ return _Notes; }
-            set{ _Notes = value; }
-        }
-
-        private byte[] _Photo;
-        public virtual byte[] Photo
-        {
-            get{ return _Photo; }
-            set{ _Photo = value; }
-        }
-
-        private string _PhotoPath;
-        public virtual string PhotoPath
-        {
-            get{ return _PhotoPath; }
-            set{ _PhotoPath = value; }
-        }
-
-        private string _PostalCode;
-        public virtual string PostalCode
-        {
-            get{ return _PostalCode; }
-            set{ _PostalCode = value; }
-        }
-
-        private string _Region;
-        public virtual string Region
-        {
-            get{ return _Region; }
-            set{ _Region = value; }
+            get{ return _FirstName; }
+            set{ _FirstName = value; }
         }
 
         private string _Title;
@@ -130,6 +46,90 @@ namespace Northwind
         {
             get{ return _TitleOfCourtesy; }
             set{ _TitleOfCourtesy = value; }
+        }
+
+        private DateTime? _BirthDate;
+        public virtual DateTime? BirthDate
+        {
+            get{ return _BirthDate; }
+            set{ _BirthDate = value; }
+        }
+
+        private DateTime? _HireDate;
+        public virtual DateTime? HireDate
+        {
+            get{ return _HireDate; }
+            set{ _HireDate = value; }
+        }
+
+        private string _Address;
+        public virtual string Address
+        {
+            get{ return _Address; }
+            set{ _Address = value; }
+        }
+
+        private string _City;
+        public virtual string City
+        {
+            get{ return _City; }
+            set{ _City = value; }
+        }
+
+        private string _Region;
+        public virtual string Region
+        {
+            get{ return _Region; }
+            set{ _Region = value; }
+        }
+
+        private string _PostalCode;
+        public virtual string PostalCode
+        {
+            get{ return _PostalCode; }
+            set{ _PostalCode = value; }
+        }
+
+        private string _Country;
+        public virtual string Country
+        {
+            get{ return _Country; }
+            set{ _Country = value; }
+        }
+
+        private string _HomePhone;
+        public virtual string HomePhone
+        {
+            get{ return _HomePhone; }
+            set{ _HomePhone = value; }
+        }
+
+        private string _Extension;
+        public virtual string Extension
+        {
+            get{ return _Extension; }
+            set{ _Extension = value; }
+        }
+
+        private byte[] _Photo;
+        public virtual byte[] Photo
+        {
+            get{ return _Photo; }
+            set{ _Photo = value; }
+        }
+
+        private string _Notes;
+        public virtual string Notes
+        {
+            get{ return _Notes; }
+            set{ _Notes = value; }
+        }
+
+        private string _PhotoPath;
+        public virtual string PhotoPath
+        {
+            get{ return _PhotoPath; }
+            set{ _PhotoPath = value; }
         }
 
         // One-To-Many Relation

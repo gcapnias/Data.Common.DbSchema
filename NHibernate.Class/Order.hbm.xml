@@ -5,14 +5,20 @@
             <column name="OrderID" not-null="false" unique="true" />
             <generator class="native" />
         </id>
-        <property name="Freight" type="Decimal">
-            <column name="Freight" not-null="false" />
-        </property>
         <property name="OrderDate" type="DateTime">
             <column name="OrderDate" not-null="false" />
         </property>
         <property name="RequiredDate" type="DateTime">
             <column name="RequiredDate" not-null="false" />
+        </property>
+        <property name="ShippedDate" type="DateTime">
+            <column name="ShippedDate" not-null="false" />
+        </property>
+        <property name="Freight" type="Decimal">
+            <column name="Freight" not-null="false" />
+        </property>
+        <property name="ShipName" type="String">
+            <column name="ShipName" length="40" not-null="false" />
         </property>
         <property name="ShipAddress" type="String">
             <column name="ShipAddress" length="60" not-null="false" />
@@ -20,25 +26,15 @@
         <property name="ShipCity" type="String">
             <column name="ShipCity" length="15" not-null="false" />
         </property>
-        <property name="ShipCountry" type="String">
-            <column name="ShipCountry" length="15" not-null="false" />
-        </property>
-        <property name="ShipName" type="String">
-            <column name="ShipName" length="40" not-null="false" />
-        </property>
-        <property name="ShippedDate" type="DateTime">
-            <column name="ShippedDate" not-null="false" />
+        <property name="ShipRegion" type="String">
+            <column name="ShipRegion" length="15" not-null="false" />
         </property>
         <property name="ShipPostalCode" type="String">
             <column name="ShipPostalCode" length="10" not-null="false" />
         </property>
-        <property name="ShipRegion" type="String">
-            <column name="ShipRegion" length="15" not-null="false" />
+        <property name="ShipCountry" type="String">
+            <column name="ShipCountry" length="15" not-null="false" />
         </property>
-        <bag name="OrderDetails" lazy="true" inverse="true" cascade="all-delete-orphan">
-            <key column="OrderID" />
-            <one-to-many class="OrderDetail" />
-        </bag>
         <many-to-one name="Customer" column="CustomerID" class="Customer" not-null="true" />
         <many-to-one name="Employee" column="EmployeeID" class="Employee" not-null="true" />
         <many-to-one name="Shipper" column="ShipVia" class="Shipper" not-null="true" />

@@ -20,20 +20,6 @@ namespace Northwind
             set{ _SupplierID = value; }
         }
 
-        private string _Address;
-        public virtual string Address
-        {
-            get{ return _Address; }
-            set{ _Address = value; }
-        }
-
-        private string _City;
-        public virtual string City
-        {
-            get{ return _City; }
-            set{ _City = value; }
-        }
-
         private string _CompanyName;
         public virtual string CompanyName
         {
@@ -55,11 +41,46 @@ namespace Northwind
             set{ _ContactTitle = value; }
         }
 
+        private string _Address;
+        public virtual string Address
+        {
+            get{ return _Address; }
+            set{ _Address = value; }
+        }
+
+        private string _City;
+        public virtual string City
+        {
+            get{ return _City; }
+            set{ _City = value; }
+        }
+
+        private string _Region;
+        public virtual string Region
+        {
+            get{ return _Region; }
+            set{ _Region = value; }
+        }
+
+        private string _PostalCode;
+        public virtual string PostalCode
+        {
+            get{ return _PostalCode; }
+            set{ _PostalCode = value; }
+        }
+
         private string _Country;
         public virtual string Country
         {
             get{ return _Country; }
             set{ _Country = value; }
+        }
+
+        private string _Phone;
+        public virtual string Phone
+        {
+            get{ return _Phone; }
+            set{ _Phone = value; }
         }
 
         private string _Fax;
@@ -74,27 +95,6 @@ namespace Northwind
         {
             get{ return _HomePage; }
             set{ _HomePage = value; }
-        }
-
-        private string _Phone;
-        public virtual string Phone
-        {
-            get{ return _Phone; }
-            set{ _Phone = value; }
-        }
-
-        private string _PostalCode;
-        public virtual string PostalCode
-        {
-            get{ return _PostalCode; }
-            set{ _PostalCode = value; }
-        }
-
-        private string _Region;
-        public virtual string Region
-        {
-            get{ return _Region; }
-            set{ _Region = value; }
         }
 
         // One-To-Many Relation

@@ -60,6 +60,7 @@
     <Compile Include="SQLiteSchemaProvider.cs" />
     <Compile Include="SqlServerSchemaProvider.cs" />
     <Compile Include="SqlServerCeSchemaProvider.cs" />
+    <Compile Include="VistaDBSchemaProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
