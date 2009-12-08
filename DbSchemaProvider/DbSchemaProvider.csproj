@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8882A52A-379E-4BA8-9091-DD727EE27F5D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{4F0F94A3-4444-4222-9E6E-88E2DCD66CA2}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SubSonic.ActiveRecord</RootNamespace>
-    <AssemblyName>SubSonic.ActiveRecord</AssemblyName>
+    <RootNamespace>SchemaExplorer</RootNamespace>
+    <AssemblyName>SchemaExplorer.DbSchemaProvider</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,16 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SubSonic, Version=2.1.1.0, Culture=neutral, PublicKeyToken=eadb47849839a332, processorArchitecture=MSIL">
+    <Reference Include="SchemaExplorer, Version=5.0.0.0, Culture=neutral, PublicKeyToken=9fd61cdb91609a7a, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\SubSonic\SubSonic.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\CodeSmith\v5.0\AddIns\SchemaExplorer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -51,25 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DbSchemaProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Templates\ActiveRecord.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ActiveRecord.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="Templates\ActiveRecord.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActiveRecord.cs</LastGenOutput>
-    </None>
-    <None Include="Templates\Data.Common.ttinclude" />
-    <None Include="Templates\Settings.ttinclude" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+    <ProjectReference Include="..\Data.Common\Data.Common.csproj">
+      <Project>{8E9FDAFD-FDC7-45D8-B965-422A531A0F21}</Project>
+      <Name>Data.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

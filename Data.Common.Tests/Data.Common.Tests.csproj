@@ -64,6 +64,7 @@
     <Compile Include="SchemaProviders\SqlServerCeSchemaProviderTest.cs" />
     <Compile Include="SchemaProviders\SQLiteSchemaProviderTest.cs" />
     <Compile Include="Views.cs" />
+    <Compile Include="SchemaProviders\VistaDBSchemaProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data.Common\Data.Common.csproj">

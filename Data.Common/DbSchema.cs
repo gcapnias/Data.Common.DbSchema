@@ -561,6 +561,10 @@ namespace Data.Common
                     dbProvider = new OracleSchemaProvider(connectionString, providerName);
                     break;
 
+                case "vistadb.net20":
+                    dbProvider = new VistaDBSchemaProvider(connectionString, providerName);
+                    break;
+
                 default:
                     throw new NotImplementedException("The provider '" + providerName + "' is not implemented!");
 

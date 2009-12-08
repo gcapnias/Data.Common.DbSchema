@@ -20,13 +20,6 @@ namespace Northwind
             set{ _OrderID = value; }
         }
 
-        private decimal? _Freight;
-        public virtual decimal? Freight
-        {
-            get{ return _Freight; }
-            set{ _Freight = value; }
-        }
-
         private DateTime? _OrderDate;
         public virtual DateTime? OrderDate
         {
@@ -39,6 +32,27 @@ namespace Northwind
         {
             get{ return _RequiredDate; }
             set{ _RequiredDate = value; }
+        }
+
+        private DateTime? _ShippedDate;
+        public virtual DateTime? ShippedDate
+        {
+            get{ return _ShippedDate; }
+            set{ _ShippedDate = value; }
+        }
+
+        private decimal? _Freight;
+        public virtual decimal? Freight
+        {
+            get{ return _Freight; }
+            set{ _Freight = value; }
+        }
+
+        private string _ShipName;
+        public virtual string ShipName
+        {
+            get{ return _ShipName; }
+            set{ _ShipName = value; }
         }
 
         private string _ShipAddress;
@@ -55,25 +69,11 @@ namespace Northwind
             set{ _ShipCity = value; }
         }
 
-        private string _ShipCountry;
-        public virtual string ShipCountry
+        private string _ShipRegion;
+        public virtual string ShipRegion
         {
-            get{ return _ShipCountry; }
-            set{ _ShipCountry = value; }
-        }
-
-        private string _ShipName;
-        public virtual string ShipName
-        {
-            get{ return _ShipName; }
-            set{ _ShipName = value; }
-        }
-
-        private DateTime? _ShippedDate;
-        public virtual DateTime? ShippedDate
-        {
-            get{ return _ShippedDate; }
-            set{ _ShippedDate = value; }
+            get{ return _ShipRegion; }
+            set{ _ShipRegion = value; }
         }
 
         private string _ShipPostalCode;
@@ -83,19 +83,11 @@ namespace Northwind
             set{ _ShipPostalCode = value; }
         }
 
-        private string _ShipRegion;
-        public virtual string ShipRegion
+        private string _ShipCountry;
+        public virtual string ShipCountry
         {
-            get{ return _ShipRegion; }
-            set{ _ShipRegion = value; }
-        }
-
-        // One-To-Many Relation
-        private IList<OrderDetail> _OrderDetails = new List<OrderDetail>();
-        public virtual IList<OrderDetail> OrderDetails
-        {
-            get{ return _OrderDetails; }
-            set{ _OrderDetails = value; }
+            get{ return _ShipCountry; }
+            set{ _ShipCountry = value; }
         }
 
         // Many-To-One Relation

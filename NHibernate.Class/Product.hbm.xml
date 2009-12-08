@@ -5,17 +5,11 @@
             <column name="ProductID" not-null="false" unique="true" />
             <generator class="native" />
         </id>
-        <property name="Discontinued" type="Boolean">
-            <column name="Discontinued" not-null="true" />
-        </property>
         <property name="ProductName" type="String">
             <column name="ProductName" length="40" not-null="true" />
         </property>
         <property name="QuantityPerUnit" type="String">
             <column name="QuantityPerUnit" length="20" not-null="false" />
-        </property>
-        <property name="ReorderLevel" type="Int16">
-            <column name="ReorderLevel" not-null="false" />
         </property>
         <property name="UnitPrice" type="Decimal">
             <column name="UnitPrice" not-null="false" />
@@ -26,10 +20,12 @@
         <property name="UnitsOnOrder" type="Int16">
             <column name="UnitsOnOrder" not-null="false" />
         </property>
-        <bag name="OrderDetails" lazy="true" inverse="true" cascade="all-delete-orphan">
-            <key column="ProductID" />
-            <one-to-many class="OrderDetail" />
-        </bag>
+        <property name="ReorderLevel" type="Int16">
+            <column name="ReorderLevel" not-null="false" />
+        </property>
+        <property name="Discontinued" type="Boolean">
+            <column name="Discontinued" not-null="true" />
+        </property>
         <many-to-one name="Category" column="CategoryID" class="Category" not-null="true" />
         <many-to-one name="Supplier" column="SupplierID" class="Supplier" not-null="true" />
     </class>

@@ -57,10 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="nHibernateCreator.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>nHibernateCreator.log</LastGenOutput>
-    </None>
     <Compile Include="dbo.Category.cs" />
     <Compile Include="dbo.Customer.cs" />
     <Compile Include="dbo.CustomerDemographic.cs" />
@@ -72,6 +68,10 @@
     <Compile Include="dbo.Shipper.cs" />
     <Compile Include="dbo.Supplier.cs" />
     <Compile Include="dbo.Territory.cs" />
+    <None Include="nHibernateCreator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>nHibernateCreator.log</LastGenOutput>
+    </None>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

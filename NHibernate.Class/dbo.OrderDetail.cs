@@ -28,11 +28,11 @@ namespace Northwind
             set{ _ProductID = value; }
         }
 
-        private float _Discount;
-        public virtual float Discount
+        private decimal _UnitPrice;
+        public virtual decimal UnitPrice
         {
-            get{ return _Discount; }
-            set{ _Discount = value; }
+            get{ return _UnitPrice; }
+            set{ _UnitPrice = value; }
         }
 
         private short _Quantity;
@@ -42,11 +42,11 @@ namespace Northwind
             set{ _Quantity = value; }
         }
 
-        private decimal _UnitPrice;
-        public virtual decimal UnitPrice
+        private float _Discount;
+        public virtual float Discount
         {
-            get{ return _UnitPrice; }
-            set{ _UnitPrice = value; }
+            get{ return _Discount; }
+            set{ _Discount = value; }
         }
 
         // Many-To-One Relation

@@ -20,13 +20,6 @@ namespace Northwind
             set{ _ProductID = value; }
         }
 
-        private bool _Discontinued;
-        public virtual bool Discontinued
-        {
-            get{ return _Discontinued; }
-            set{ _Discontinued = value; }
-        }
-
         private string _ProductName;
         public virtual string ProductName
         {
@@ -39,13 +32,6 @@ namespace Northwind
         {
             get{ return _QuantityPerUnit; }
             set{ _QuantityPerUnit = value; }
-        }
-
-        private short? _ReorderLevel;
-        public virtual short? ReorderLevel
-        {
-            get{ return _ReorderLevel; }
-            set{ _ReorderLevel = value; }
         }
 
         private decimal? _UnitPrice;
@@ -69,12 +55,18 @@ namespace Northwind
             set{ _UnitsOnOrder = value; }
         }
 
-        // One-To-Many Relation
-        private IList<OrderDetail> _OrderDetails = new List<OrderDetail>();
-        public virtual IList<OrderDetail> OrderDetails
+        private short? _ReorderLevel;
+        public virtual short? ReorderLevel
         {
-            get{ return _OrderDetails; }
-            set{ _OrderDetails = value; }
+            get{ return _ReorderLevel; }
+            set{ _ReorderLevel = value; }
+        }
+
+        private bool _Discontinued;
+        public virtual bool Discontinued
+        {
+            get{ return _Discontinued; }
+            set{ _Discontinued = value; }
         }
 
         // Many-To-One Relation
